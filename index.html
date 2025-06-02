@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>매십이의 하루</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            background: linear-gradient(45deg, #4a90e2, #357abd);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-50px, -50px) rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .screen {
+            padding: 20px;
+            min-height: calc(100vh - 120px);
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .story-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #333;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #4a90e2;
+        }
+
+        .time-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .choice-container {
+            margin-top: 20px;
+        }
+
+        .choice-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .choice-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .choice-btn:hover {
+            border-color: #4a90e2;
+            background: #f8f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+        }
+
+        .major-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .major-btn {
+            padding: 15px 10px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .major-btn:hover {
+            border-color: #4a90e2;
+            background: #f8f9ff;
+            transform: scale(1.05);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4a90e2, #357abd);
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        .character-img {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #4a90e2, #357abd);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .character-img.happy {
+            background: linear-gradient(45deg, #51cf66, #69db7c);
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        .character-img.sad {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            animation: shake 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .feedback {
+            background: linear-gradient(45deg, #51cf66, #69db7c);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .feedback.incorrect {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #4a90e2;
+        }
+
+        .summary-title {
+            font-weight: bold;
+            color: #4a90e2;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4a90e2, #357abd);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #51cf66, #69db7c);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(81, 207, 102, 0.4);
+        }
+
+        .share-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffd93d, #ff6b6b);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .motivation-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 15px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .guide-card {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .emoji {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        /* 피드백 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 20px;
+            max-width: 350px;
+            text-align: center;
+            animation: modalSlideIn 0.3s ease-out;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-character {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            color: white;
+        }
+
+        .modal-character.correct {
+            background: linear-gradient(45deg, #51cf66, #69db7c);
+        }
+
+        .modal-character.incorrect {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-feedback {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .modal-btn {
+            background: linear-gradient(45deg, #4a90e2, #357abd);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .retry-btn {
+            background: linear-gradient(45deg, #ffa726, #ff9800);
+            margin-right: 10px;
+        }
+
+        .retry-btn:hover {
+            box-shadow: 0 5px 15px rgba(255, 167, 38, 0.4);
+        }
+
+        /* 결과 공유 카드 */
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 20px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            animation: float 15s infinite linear;
+        }
+
+        .result-type {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .result-description {
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .share-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .share-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .share-btn.twitter {
+            background: #1da1f2;
+            color: white;
+        }
+
+        .share-btn.kakao {
+            background: #fee500;
+            color: #3c1e1e;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🌟 매십이의 하루</h1>
+            <p>너라면 어떻게 행동할래?</p>
+        </div>
+
+        <!-- 시작 화면 -->
+        <div class="screen active" id="start">
+            <div class="character-img">👨‍🎓</div>
+            <div class="story-text">
+                안녕! 나는 매십이야. 시각장애가 있는 대학생이지.<br><br>
+                오늘도 학교에 간다. 나에겐 안내견 '보리'가 있고, 스크린리더와 한소네가 있어. 
+                그리고... 가끔 귀찮은 눈치들도 있지만 말이야.<br><br>
+                <strong>너도 나와 함께 하루를 보내볼래?</strong>
+            </div>
+
+            <!-- 새로운 동기부여 섹션 -->
+            <div style="text-align: center; margin: 20px 0;">
+                <div class="motivation-badge">
+                    💡 체험 종료 시, 당신의 '도움 유형'이 분석됩니다!
+                </div>
+                <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                    도우미, 동반자, 시스템 개선자 중 당신은 어떤 사람일까요?
+                </p>
+            </div>
+            
+            <div class="choice-container">
+                <div class="choice-title">먼저, 당신은 어느 단과대 학생인가요?</div>
+                <div class="major-select">
+                    <button class="major-btn" onclick="selectMajor('자연대')">🔬 자연대</button>
+                    <button class="major-btn" onclick="selectMajor('공대')">⚙️ 공대</button>
+                    <button class="major-btn" onclick="selectMajor('경영대')">📊 경영대</button>
+                    <button class="major-btn" onclick="selectMajor('사범대')">📚 사범대</button>
+                    <button class="major-btn" onclick="selectMajor('디자인')">🎨 디자인</button>
+                    <button class="major-btn" onclick="selectMajor('인문대')">📖 인문대</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 상황 1: 버스 정류장 -->
+        <div class="screen" id="situation1">
+            <div class="time-badge">⏰ 08:30 AM</div>
+            <div class="story-text">
+                <strong>📍 버스 정류장</strong><br><br>
+                보리와 함께 버스 정류장에 도착했어. 여러 대의 버스가 지나가는데, 
+                어떤 버스가 내가 타야 할 '142번'인지 모르겠어.<br><br>
+                너는 나 옆에 서 있다가 이 상황을 봤어.
+            </div>
+            
+            <div class="choice-container">
+                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
+                <button class="choice-btn" onclick="makeChoice(1, 'help')">
+                    🗣️ "저 버스가 142번이에요!"라고 알려주기
+                </button>
+                <button class="choice-btn" onclick="makeChoice(1, 'wait')">
+                    ⏳ 매십이가 스스로 해결할 때까지 기다리기
+                </button>
+                <button class="choice-btn" onclick="makeChoice(1, 'ask')">
+                    💬 "도움이 필요하세요?"라고 먼저 물어보기
+                </button>
+            </div>
+        </div>
+
+        <!-- 상황 2: 강의실 -->
+        <div class="screen" id="situation2">
+            <div class="time-badge">⏰ 10:00 AM</div>
+            <div class="story-text">
+                <strong>📍 강의실</strong><br><br>
+                교수님이 PPT를 띄우셨어. 화면엔 복잡한 표와 그래프만 가득하고, 
+                설명 없이 "이 데이터를 보시면..."이라고만 하셔.<br><br>
+                스크린리더로는 내용을 전혀 파악할 수 없어. 너는 내 옆자리에 앉아있어.
+            </div>
+            
+            <div class="choice-container">
+                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
+                <button class="choice-btn" onclick="makeChoice(2, 'whisper')">
+                    🗣️ 표 내용을 작은 소리로 설명해주기
+                </button>
+                <button class="choice-btn" onclick="makeChoice(2, 'note')">
+                    📝 수업 후에 필기 내용 공유해주기
+                </button>
+                <button class="choice-btn" onclick="makeChoice(2, 'professor')">
+                    🙋‍♀️ 교수님께 설명을 요청하는 손 들기
+                </button>
+            </div>
+        </div>
+
+        <!-- 상황 3: 식당 -->
+        <div class="screen" id="situation3">
+            <div class="time-badge">⏰ 12:30 PM</div>
+            <div class="story-text">
+                <strong>📍 학생식당</strong><br><br>
+                점심시간이야. 키오스크 앞에서 한참 서 있는데, 
+                터치스크린이라 주문할 수가 없어. 뒤에 사람들이 기다리고 있는 것 같아서 조급해져.<br><br>
+                너는 내 뒤에서 줄을 서고 있어.
+            </div>
+            
+            <div class="choice-container">
+                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
+                <button class="choice-btn" onclick="makeChoice(3, 'help_order')">
+                    🤝 직접 주문을 도와드리기
+                </button>
+                <button class="choice-btn" onclick="makeChoice(3, 'explain_menu')">
+                    📋 메뉴를 읽어드리고 원하는 것 물어보기
+                </button>
+                <button class="choice-btn" onclick="makeChoice(3, 'staff')">
+                    👥 식당 직원에게 도움 요청하기
+                </button>
+            </div>
+        </div>
+
+        <!-- 단과대별 맞춤 상황 -->
+        <div class="screen" id="major_situation">
+            <div class="time-badge">⏰ 14:00 PM</div>
+            <div class="story-text" id="major_story">
+                <!-- 여기에 단과대별 상황이 들어감 -->
+            </div>
+            
+            <div class="choice-container">
+                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
+                <div id="major_choices">
+                    <!-- 여기에 단과대별 선택지가 들어감 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 상황 4: 조별과제 -->
+        <div class="screen" id="situation4">
+            <div class="time-badge">⏰ 16:00 PM</div>
+            <div class="story-text">
+                <strong>📍 스터디룸</strong><br><br>
+                조별과제 발표 준비 중이야. 팀원들이 만든 PPT는 도표와 이미지 중심이라 
+                내가 발표할 부분을 이해하기 어려워.<br><br>
+                "매십아, 너는 이 부분 맡아."라고 하는데... 너도 같은 팀이야.
+            </div>
+            
+            <div class="choice-container">
+                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
+                <button class="choice-btn" onclick="makeChoice(4, 'explain')">
+                    📊 슬라이드 내용을 자세히 설명해주기
+                </button>
+                <button class="choice-btn" onclick="makeChoice(4, 'text')">
+                    📝 텍스트 버전 대본 함께 작성하기
+                </button>
+                <button class="choice-btn" onclick="makeChoice(4, 'role')">
+                    🔄 매십이에게 맞는 역할 다시 분배 제안하기
+                </button>
+            </div>
+        </div>
+
+        <!-- 상황 5: 엘리베이터 -->
+        <div class="screen" id="situation5">
+            <div class="time-badge">⏰ 18:00 PM</div>
+            <div class="story-text">
+                <strong>📍 엘리베이터 앞</strong><br><br>
+                하루 일과를 마치고 엘리베이터를 기다리고 있어. 
+                엘리베이터가 도착했는데 어느 쪽 문이 열렸는지, 안에 사람이 얼마나 있는지 모르겠어.<br><br>
+                너도 같은 엘리베이터를 기다리고 있어.
+            </div>
+            
+            <div class="choice-container">
+                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
+                <button class="choice-btn" onclick="makeChoice(5, 'guide')">
+                    👉 "왼쪽에 문이 열렸어요, 사람이 별로 없어요"라고 안내
+                </button>
+                <button class="choice-btn" onclick="makeChoice(5, 'arm')">
+                    🤝 팔을 살짝 잡고 엘리베이터까지 안내
+                </button>
+                <button class="choice-btn" onclick="makeChoice(5, 'together')">
+                    🚶‍♂️ "같이 타요"라고 말하며 함께 이동
+                </button>
+            </div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div class="screen" id="result">
+            <div class="character-img">🎉</div>
+            <div class="story-text">
+                <strong>수고했어! 너와 함께한 하루가 정말 의미있었어.</strong><br><br>
+                너는 매십이의 하루 속에서 이런 선택들을 했어:
+            </div>
+            
+            <div id="choice_summary">
+                <!-- 선택 요약이 여기에 들어감 -->
+            </div>
+
+            <!-- 새로운 결과 공유 카드 -->
+            <div class="result-card" id="resultCard">
+                <div class="result-type" id="resultType">
+                    🤝 소통형 동반자
+                </div>
+                <div class="result-description" id="resultDescription">
+                    상대방의 의견을 먼저 묻고 함께 해결책을 찾으려는 배려심이 깊어요.
+                </div>
+            </div>
+
+            <div class="feedback">
+                <strong>💡 알아두면 좋은 팁</strong><br>
+                시각장애인을 도울 때는 먼저 "도움이 필요하세요?"라고 물어보는 것이 좋아요. 
+                갑자기 팔을 잡거나 밀지 말고, 구체적으로 상황을 설명해주세요!
+            </div>
+
+            <div class="guide-card">
+                <strong>🤝 이럴 때 이렇게 해주세요</strong><br>
+                • 길 안내: "3시 방향으로 2미터" 같이 구체적으로<br>
+                • 계단: "위로 올라가는 계단 5개" 미리 알려주기<br>
+                • 문서: 표나 그래프는 내용을 간략히 설명<br>
+                • 키오스크: 메뉴 읽어주고 선택권 주기
+            </div>
+
+            <div class="share-section">
+                <div class="badge">🏆 공감 체험 완료!</div>
+                <p>친구들과 함께 체험해보세요</p>
+                
+                <div class="share-buttons">
+                    <button class="share-btn twitter" onclick="shareToTwitter()">
+                        🐦 트위터 공유
+                    </button>
+                    <button class="share-btn kakao" onclick="shareToKakao()">
+                        💬 카카오 공유
+                    </button>
+                </div>
+                
+                <button class="btn-primary" onclick="downloadResultImage()">
+                    📸 결과 이미지 저장하기
+                </button>
+                <button class="btn-secondary" onclick="restart()">
+                    🔄 다시 체험하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 피드백 모달 -->
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content">
+            <div class="modal-character" id="modalCharacter">😊</div>
+            <div class="modal-title" id="modalTitle">좋은 선택이에요!</div>
+            <div class="modal-feedback" id="modalFeedback">
+                먼저 "도움이 필요하세요?"라고 물어보는 것은 상대방을 존중하는 마음이에요!
+            </div>
+            <div>
+                <button class="modal-btn retry-btn" id="retryBtn" onclick="retryChoice()" style="display: none;">
+                    🔄 다시 선택하기
+                </button>
+                <button class="modal-btn" onclick="closeModal()">
+                    ➡️ 다음으로
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScreen = 0;
+        let userChoices = [];
+        let userMajor = '';
+        let currentSituation = null;
+        let retryCount = 0;
+        
+        const totalScreens = 7; // 시작 + 5상황 + 결과
+        
+        // 피드백 데이터
+        const feedbackMap = {
+            1: { // 버스 정류장
+                'help': { 
+                    isCorrect: false, 
+                    feedback: '의도는 좋지만, 갑자기 소리를 내면 시각장애인이 당황할 수 있어요. 먼저 "도움이 필요하세요?"라고 물어보는 것이 더 좋아요.',
+                    character: '😟'
+                },
+                'wait': { 
+                    isCorrect: false, 
+                    feedback: '기다려주는 마음은 좋지만, 너무 오래 기다리게 하면 불편할 수 있어요. 적절한 때에 도움을 제안해보세요.',
+                    character: '😐'
+                },
+                'ask': { 
+                    isCorrect: true, 
+                    feedback: '완벽해요! "도움이 필요하세요?"라고 먼저 물어보는 것은 상대방의 주도권을 존중하는 최고의 방법이에요.',
+                    character: '😊'
+                }
+            },
+            2: { // 강의실
+                'whisper': { 
+                    isCorrect: true, 
+                    feedback: '훌륭해요! 실시간으로 내용을 설명해주면 수업을 놓치지 않고 따라갈 수 있어요. 작은 소리로 하는 것도 배려심이 깊어요.',
+                    character: '😊'
+                },
+                'note': { 
+                    isCorrect: false, 
+                    feedback: '필기 공유는 좋은 생각이지만, 수업 중에는 실시간 정보가 더 필요해요. 나중에 복습할 때 도움이 되겠지만요.',
+                    character: '😐'
+                },
+                'professor': { 
+                    isCorrect: true, 
+                    feedback: '좋은 선택이에요! 교수님께 요청하면 모든 학생이 함께 혜택을 받을 수 있어요. 근본적인 해결책이죠.',
+                    character: '😊'
+                }
+            },
+            3: { // 식당
+                'help_order': { 
+                    isCorrect: false, 
+                    feedback: '직접 도와주려는 마음은 고맙지만, 본인의 선택권을 빼앗을 수 있어요. 메뉴를 설명해주고 선택하게 하는 것이 더 좋아요.',
+                    character: '😟'
+                },
+                'explain_menu': { 
+                    isCorrect: true, 
+                    feedback: '정말 좋은 방법이에요! 메뉴 옵션을 설명해주고 선택권을 주면 독립적으로 주문할 수 있어요.',
+                    character: '😊'
+                },
+                'staff': { 
+                    isCorrect: true, 
+                    feedback: '현명한 선택이에요! 직원에게 도움을 요청하면 앞으로도 다른 시각장애인들이 더 나은 서비스를 받을 수 있어요.',
+                    character: '😊'
+                }
+            },
+            4: { // 조별과제
+                'explain': { 
+                    isCorrect: true, 
+                    feedback: '최고예요! 슬라이드 내용을 자세히 설명해주면 발표 준비를 제대로 할 수 있어요.',
+                    character: '😊'
+                },
+                'text': { 
+                    isCorrect: true, 
+                    feedback: '완벽한 해결책이에요! 텍스트 버전 대본이 있으면 연습도 하고 자신감 있게 발표할 수 있어요.',
+                    character: '😊'
+                },
+                'role': { 
+                    isCorrect: true, 
+                    feedback: '정말 배려심이 깊은 선택이에요! 각자의 강점을 살린 역할 분배는 팀 전체에 도움이 돼요.',
+                    character: '😊'
+                }
+            },
+            5: { // 엘리베이터
+                'guide': { 
+                    isCorrect: true, 
+                    feedback: '완벽해요! 구체적이고 명확한 상황 설명은 시각장애인에게 가장 도움이 되는 방법이에요.',
+                    character: '😊'
+                },
+                'arm': { 
+                    isCorrect: false, 
+                    feedback: '갑자기 팔을 잡으면 놀랄 수 있어요. 먼저 "안내해드릴까요?"라고 물어보고 허락을 받는 것이 좋아요.',
+                    character: '😟'
+                },
+                'together': { 
+                    isCorrect: true, 
+                    feedback: '좋은 방법이에요! 자연스럽게 함께 이동하며 필요시 도움을 줄 수 있는 배려심 있는 선택이에요.',
+                    character: '😊'
+                }
+            }
+        };
+
+        const majorSituations = {
+            '자연대': {
+                story: '<strong>📍 실험실</strong><br><br>생물학 실험 수업이야. 교수님이 "현미경으로 관찰한 결과를 보고서에 작성하세요"라고 하셨어.<br><br>실험 파트너인 너는 현미경을 보고 있고, 나는 관찰 결과를 어떻게 파악할지 고민 중이야.',
+                choices: [
+                    { text: '🔬 보이는 것을 자세히 묘사해주기', value: 'describe', isCorrect: true, feedback: '완벽해요! 관찰 내용을 구체적으로 묘사해주면 실험 결과를 정확히 파악할 수 있어요.', character: '😊' },
+                    { text: '📝 관찰 결과를 함께 정리하기', value: 'write', isCorrect: true, feedback: '좋은 방법이에요! 함께 정리하면서 서로 확인할 수 있어 더 정확한 결과를 얻을 수 있어요.', character: '😊' },
+                    { text: '📸 현미경 이미지를 찍어서 나중에 설명', value: 'photo', isCorrect: false, feedback: '사진은 도움이 되지만, 실험 중 실시간 관찰이 더 중요해요. 지금 당장 설명해주는 것이 좋겠어요.', character: '😐' }
+                ]
+            },
+            '공대': {
+                story: '<strong>📍 설계 수업</strong><br><br>CAD 프로그램으로 기계 설계 과제를 하고 있어. 화면의 3D 모델링은 스크린리더로 파악이 불가능해.<br><br>너는 내 옆에서 같은 과제를 하고 있어.',
+                choices: [
+                    { text: '⚙️ 설계 구조를 말로 설명해주기', value: 'explain', isCorrect: true, feedback: '훌륭해요! 3D 구조를 말로 설명해주면 전체적인 설계를 이해할 수 있어요.', character: '😊' },
+                    { text: '🤝 설계를 함께 진행하기', value: 'collaborate', isCorrect: true, feedback: '완벽한 팀워크예요! 함께 설계하면서 서로의 아이디어를 나눌 수 있어 더 좋은 결과가 나올 거예요.', character: '😊' },
+                    { text: '📐 치수와 규격을 불러주기', value: 'dimensions', isCorrect: false, feedback: '치수 정보는 도움이 되지만, 전체적인 구조 이해가 우선이에요. 설계 컨셉부터 설명해주는 것이 좋겠어요.', character: '😐' }
+                ]
+            },
+            '경영대': {
+                story: '<strong>📍 경영전략 수업</strong><br><br>팀 프로젝트에서 시장 분석 차트를 발표해야 해. PPT에는 복잡한 그래프와 도표들이 가득해.<br><br>같은 팀인 너는 차트를 보며 발표 준비를 하고 있어.',
+                choices: [
+                    { text: '📊 차트 데이터를 표로 정리해주기', value: 'data', isCorrect: true, feedback: '최고의 선택이에요! 시각적 데이터를 텍스트로 정리해주면 분석하고 발표하기가 훨씬 쉬워져요.', character: '😊' },
+                    { text: '🗣️ 발표 대본을 함께 작성하기', value: 'script', isCorrect: true, feedback: '완벽해요! 함께 대본을 작성하면 차트 내용을 완전히 이해하고 자신있게 발표할 수 있어요.', character: '😊' },
+                    { text: '📈 트렌드를 말로 요약해주기', value: 'summary', isCorrect: false, feedback: '요약은 도움이 되지만, 발표를 위해서는 더 자세한 데이터가 필요해요. 구체적인 수치까지 알려주면 좋겠어요.', character: '😐' }
+                ]
+            },
+            '사범대': {
+                story: '<strong>📍 교육학 수업</strong><br><br>수업 교안 작성 과제야. 시각 자료를 활용한 수업 계획을 세워야 하는데, 어떤 이미지나 영상을 사용할지 감이 안 와.<br><br>너도 같은 과제를 하고 있어.',
+                choices: [
+                    { text: '🎨 시각 자료 아이디어 함께 논의하기', value: 'brainstorm', isCorrect: true, feedback: '훌륭한 협력이에요! 함께 아이디어를 나누면 더 창의적이고 효과적인 수업을 만들 수 있어요.', character: '😊' },
+                    { text: '📚 대체 텍스트가 포함된 자료 찾기', value: 'accessible', isCorrect: true, feedback: '정말 배려심 깊은 선택이에요! 접근성을 고려한 자료를 찾는 것은 모든 학생을 위한 최고의 방법이에요.', character: '😊' },
+                    { text: '🎭 체험형 활동으로 수업 계획 변경 제안', value: 'activity', isCorrect: true, feedback: '창의적인 해결책이에요! 체험 활동은 시각 자료 없이도 효과적인 학습이 가능한 훌륭한 방법이에요.', character: '😊' }
+                ]
+            },
+            '디자인': {
+                story: '<strong>📍 디자인 스튜디오</strong><br><br>포스터 디자인 과제 피드백 시간이야. 교수님과 학생들이 시각적 요소에 대해서만 이야기하고 있어.<br><br>"색감이 어떠냐", "레이아웃이 어떠냐" 하는데... 너는 내 작품도 보고 있어.',
+                choices: [
+                    { text: '🎨 색상과 구성을 구체적으로 설명해주기', value: 'describe', isCorrect: true, feedback: '완벽해요! 색상과 구성을 구체적으로 설명해주면 디자인 의도를 완전히 파악할 수 있어요.', character: '😊' },
+                    { text: '💡 디자인 컨셉을 중심으로 피드백하기', value: 'concept', isCorrect: true, feedback: '정말 좋은 접근이에요! 컨셉 중심의 피드백은 시각적 한계를 넘어서는 깊이 있는 평가예요.', character: '😊' },
+                    { text: '✋ 교수님께 설명적 피드백 요청하기', value: 'request', isCorrect: true, feedback: '현명한 선택이에요! 교수님께 요청하면 앞으로 모든 학생이 더 포괄적인 피드백을 받을 수 있어요.', character: '😊' }
+                ]
+            },
+            '인문대': {
+                story: '<strong>📍 문학 세미나</strong><br><br>고전 문학 작품 분석 발표 시간이야. 다른 학생이 작품 속 삽화를 보여주며 "이 그림에서 보듯이..."라고 설명하고 있어.<br><br>너도 같은 세미나에 참여하고 있어.',
+                choices: [
+                    { text: '🖼️ 삽화 내용을 간단히 설명해주기', value: 'describe', isCorrect: true, feedback: '좋은 도움이에요! 삽화 내용을 설명해주면 발표 내용을 완전히 이해할 수 있어요.', character: '😊' },
+                    { text: '📖 텍스트 기반 분석으로 토론 이끌기', value: 'text_focus', isCorrect: true, feedback: '훌륭한 방법이에요! 텍스트 중심의 분석은 모든 참여자가 함께할 수 있는 포괄적인 토론을 만들어요.', character: '😊' },
+                    { text: '🗣️ 발표자에게 설명 보충 요청하기', value: 'clarify', isCorrect: true, feedback: '적극적이고 좋은 자세예요! 설명을 요청하는 것은 모든 사람의 이해를 돕는 긍정적인 행동이에요.', character: '😊' }
+                ]
+            }
+        };
+
+        function updateProgress() {
+            const progress = (currentScreen / totalScreens) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function selectMajor(major) {
+            userMajor = major;
+            showScreen('situation1');
+        }
+
+        function showScreen(screenId) {
+            // 모든 화면 숨기기
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // 선택된 화면 보이기
+            document.getElementById(screenId).classList.add('active');
+            
+            // 진행률 업데이트
+            if (screenId === 'situation1') currentScreen = 1;
+            else if (screenId === 'situation2') currentScreen = 2;
+            else if (screenId === 'situation3') currentScreen = 3;
+            else if (screenId === 'major_situation') currentScreen = 4;
+            else if (screenId === 'situation4') currentScreen = 5;
+            else if (screenId === 'situation5') currentScreen = 6;
+            else if (screenId === 'result') currentScreen = 7;
+            
+            updateProgress();
+            
+            // 단과대별 상황 설정
+            if (screenId === 'major_situation') {
+                setupMajorSituation();
+            }
+            
+            // 페이지 최상단으로 스크롤
+            window.scrollTo(0, 0);
+        }
+
+        function setupMajorSituation() {
+            const situation = majorSituations[userMajor];
+            document.getElementById('major_story').innerHTML = situation.story;
+            
+            const choicesContainer = document.getElementById('major_choices');
+            choicesContainer.innerHTML = '';
+            
+            situation.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.className = 'choice-btn';
+                button.textContent = choice.text;
+                button.onclick = () => makeChoice('major', choice.value);
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        function makeChoice(situation, choice) {
+            currentSituation = situation;
+            
+            // 피드백 모달 표시
+            showFeedbackModal(situation, choice);
+            
+            userChoices.push({
+                situation: situation,
+                choice: choice,
+                major: userMajor
+            });
+        }
+
+        function showFeedbackModal(situation, choice) {
+            let feedback;
+            
+            if (situation === 'major') {
+                const majorSituation = majorSituations[userMajor];
+                feedback = majorSituation.choices.find(c => c.value === choice);
+            } else {
+                feedback = feedbackMap[situation][choice];
+            }
+            
+            const modal = document.getElementById('feedbackModal');
+            const character = document.getElementById('modalCharacter');
+            const title = document.getElementById('modalTitle');
+            const feedbackText = document.getElementById('modalFeedback');
+            const retryBtn = document.getElementById('retryBtn');
+            
+            // 캐릭터와 제목 설정
+            character.textContent = feedback.character;
+            character.className = `modal-character ${feedback.isCorrect ? 'correct' : 'incorrect'}`;
+            
+            title.textContent = feedback.isCorrect ? '좋은 선택이에요! 😊' : '다시 생각해볼까요? 😟';
+            feedbackText.textContent = feedback.feedback;
+            
+            // 재시도 버튼 표시 (틀린 경우에만)
+            if (!feedback.isCorrect && retryCount < 2) {
+                retryBtn.style.display = 'inline-block';
+            } else {
+                retryBtn.style.display = 'none';
+            }
+            
+            modal.classList.add('active');
+            
+            // 캐릭터 애니메이션
+            const characterImg = document.querySelector('.character-img');
+            if (feedback.isCorrect) {
+                characterImg.className = 'character-img happy';
+                characterImg.textContent = '😊';
+            } else {
+                characterImg.className = 'character-img sad';
+                characterImg.textContent = '😟';
+            }
+            
+            setTimeout(() => {
+                characterImg.className = 'character-img';
+                characterImg.textContent = '👨‍🎓';
+            }, 2000);
+        }
+
+        function closeModal() {
+            document.getElementById('feedbackModal').classList.remove('active');
+            retryCount = 0;
+            
+            // 다음 화면으로 이동
+            if (currentSituation === 1) {
+                showScreen('situation2');
+            } else if (currentSituation === 2) {
+                showScreen('situation3');
+            } else if (currentSituation === 3) {
+                showScreen('major_situation');
+            } else if (currentSituation === 'major') {
+                showScreen('situation4');
+            } else if (currentSituation === 4) {
+                showScreen('situation5');
+            } else if (currentSituation === 5) {
+                showScreen('result');
+                showResults();
+            }
+        }
+
+        function retryChoice() {
+            retryCount++;
+            document.getElementById('feedbackModal').classList.remove('active');
+            
+            // 마지막 선택 제거
+            userChoices.pop();
+            
+            // 현재 화면 유지 (선택을 다시 할 수 있도록)
+        }
+
+        function showResults() {
+            const summaryContainer = document.getElementById('choice_summary');
+            summaryContainer.innerHTML = '';
+            
+            const situations = [
+                { id: 1, title: '버스 정류장', choices: { 'help': '적극적으로 도움 제공', 'wait': '기다려주기', 'ask': '정중하게 먼저 물어보기' }},
+                { id: 2, title: '강의실', choices: { 'whisper': '내용 설명해주기', 'note': '필기 공유하기', 'professor': '교수님께 요청하기' }},
+                { id: 3, title: '학생식당', choices: { 'help_order': '직접 주문 도움', 'explain_menu': '메뉴 설명하기', 'staff': '직원에게 도움 요청' }},
+                { id: 4, title: '조별과제', choices: { 'explain': '슬라이드 설명', 'text': '텍스트 버전 작성', 'role': '역할 재분배 제안' }},
+                { id: 5, title: '엘리베이터', choices: { 'guide': '상황 안내하기', 'arm': '팔 잡고 안내', 'together': '함께 이동하기' }}
+            ];
+            
+            const majorChoices = {
+                '자연대': { 'describe': '관찰 결과 묘사', 'write': '함께 정리하기', 'photo': '이미지로 기록' },
+                '공대': { 'explain': '구조 설명하기', 'collaborate': '함께 설계하기', 'dimensions': '치수 불러주기' },
+                '경영대': { 'data': '데이터 표 정리', 'script': '발표 대본 작성', 'summary': '트렌드 요약' },
+                '사범대': { 'brainstorm': '아이디어 논의', 'accessible': '접근성 자료 찾기', 'activity': '체험 활동 제안' },
+                '디자인': { 'describe': '시각 요소 설명', 'concept': '컨셉 중심 피드백', 'request': '설명적 피드백 요청' },
+                '인문대': { 'describe': '삽화 내용 설명', 'text_focus': '텍스트 중심 분석', 'clarify': '설명 보충 요청' }
+            };
+            
+            userChoices.forEach((userChoice, index) => {
+                const card = document.createElement('div');
+                card.className = 'summary-card';
+                
+                let choiceText = '';
+                if (userChoice.situation === 'major') {
+                    choiceText = majorChoices[userMajor][userChoice.choice];
+                    card.innerHTML = `
+                        <div class="summary-title">${userMajor} 상황</div>
+                        <div>선택: ${choiceText}</div>
+                    `;
+                } else {
+                    const situation = situations.find(s => s.id === userChoice.situation);
+                    choiceText = situation.choices[userChoice.choice];
+                    card.innerHTML = `
+                        <div class="summary-title">${situation.title}</div>
+                        <div>선택: ${choiceText}</div>
+                    `;
+                }
+                
+                summaryContainer.appendChild(card);
+            });
+            
+            // 선택 패턴 분석 및 결과 카드 업데이트
+            const analysis = analyzeChoices();
+            updateResultCard(analysis);
+        }
+        
+        function analyzeChoices() {
+            const choiceValues = userChoices.map(c => c.choice);
+            
+            // 적극적 도움 패턴
+            const activeHelp = ['help', 'whisper', 'help_order', 'explain', 'guide'].filter(choice => 
+                choiceValues.includes(choice)).length;
+            
+            // 소통 중심 패턴  
+            const communicative = ['ask', 'note', 'explain_menu', 'text', 'together'].filter(choice => 
+                choiceValues.includes(choice)).length;
+            
+            // 시스템 개선 패턴
+            const systematic = ['professor', 'staff', 'role', 'request'].filter(choice => 
+                choiceValues.includes(choice)).length;
+            
+            if (activeHelp >= 3) {
+                return {
+                    type: "🤝 적극적 도우미",
+                    description: "어려운 상황을 보면 바로 나서서 도움을 주려고 하는 따뜻한 마음을 가지고 있어요. 때로는 먼저 물어보는 것도 좋답니다!",
+                    emoji: "🤝"
+                };
+            } else if (communicative >= 3) {
+                return {
+                    type: "💬 소통형 동반자",
+                    description: "상대방의 의견을 먼저 묻고 함께 해결책을 찾으려는 배려심이 깊어요. 최고의 도움 방식이에요!",
+                    emoji: "💬"
+                };
+            } else if (systematic >= 2) {
+                return {
+                    type: "🔧 시스템 개선자",
+                    description: "근본적인 문제 해결을 통해 더 나은 환경을 만들려는 생각이 깊어요. 장기적 관점의 도움을 주는 분이에요!",
+                    emoji: "🔧"
+                };
+            } else {
+                return {
+                    type: "⚖️ 균형잡힌 협력자",
+                    description: "상황에 맞는 최적의 도움 방법을 찾으려고 노력하는 지혜로운 분이에요. 다양한 상황에 유연하게 대응할 수 있어요!",
+                    emoji: "⚖️"
+                };
+            }
+        }
+
+        function updateResultCard(analysis) {
+            document.getElementById('resultType').textContent = analysis.type;
+            document.getElementById('resultDescription').textContent = analysis.description;
+        }
+
+        function shareToTwitter() {
+            const analysis = analyzeChoices();
+            const shareText = encodeURIComponent(
+                `🌟 매십이의 하루 체험 완료!\n\n나는 '${analysis.type}'였어요.\n${analysis.description}\n\n너도 체험해봐! 👇\n#매십이의하루 #장애인식개선 #공감체험`
+            );
+            const url = encodeURIComponent(window.location.href);
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${url}`;
+            window.open(twitterUrl, '_blank');
+        }
+
+        function shareToKakao() {
+            const analysis = analyzeChoices();
+            const shareText = `🌟 매십이의 하루 체험 완료!\n\n나는 '${analysis.type}'였어요.\n${analysis.description}\n\n너도 체험해봐!`;
+            
+            // 간단한 카카오톡 공유 (실제 구현시 Kakao SDK 필요)
+            if (navigator.share) {
+                navigator.share({
+                    title: '매십이의 하루 - 나의 도움 유형',
+                    text: shareText,
+                    url: window.location.href,
+                });
+            } else {
+                // 클립보드 복사 대안
+                navigator.clipboard.writeText(shareText + '\n' + window.location.href).then(() => {
+                    alert('카카오톡 공유 메시지가 클립보드에 복사되었습니다!');
+                });
+            }
+        }
+
+        function downloadResultImage() {
+            // html2canvas 라이브러리가 필요합니다. 
+            // 실제 구현시에는 CDN에서 로드하거나 별도 설치 필요
+            const resultCard = document.getElementById('resultCard');
+            const analysis = analyzeChoices();
+            
+            // 간단한 이미지 다운로드 대안 (실제로는 html2canvas 사용 권장)
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 400;
+            canvas.height = 300;
+            
+            // 배경 그라디언트
+            const gradient = ctx.createLinearGradient(0, 0, 400, 300);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 400, 300);
+            
+            // 텍스트 스타일
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 24px Arial';
+            ctx.fillText('매십이의 하루', 200, 50);
+            
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('나의 도움 유형', 200, 80);
+            
+            ctx.font = 'bold 28px Arial';
+            ctx.fillText(analysis.type, 200, 130);
+            
+            // 설명 텍스트 (여러 줄)
+            ctx.font = '14px Arial';
+            const words = analysis.description.split(' ');
+            let line = '';
+            let y = 170;
+            
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                const testWidth = metrics.width;
+                if (testWidth > 350 && n > 0) {
+                    ctx.fillText(line, 200, y);
+                    line = words[n] + ' ';
+                    y += 20;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, 200, y);
+            
+            ctx.font = '12px Arial';
+            ctx.fillText('#매십이의하루 #장애인식개선', 200, 250);
+            
+            // 이미지 다운로드
+            const link = document.createElement('a');
+            link.download = 'maesipi_result.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function restart() {
+            currentScreen = 0;
+            userChoices = [];
+            userMajor = '';
+            currentSituation = null;
+            retryCount = 0;
+            updateProgress();
+            
+            // 시작 화면으로 돌아가기
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById('start').classList.add('active');
+            
+            // 캐릭터 초기화
+            const characterImg = document.querySelector('.character-img');
+            characterImg.className = 'character-img';
+            characterImg.textContent = '👨‍🎓';
+            
+            window.scrollTo(0, 0);
+        }
+
+        // 초기 진행률 설정
+        updateProgress();
+        
+        // 터치 제스처 지원 (모바일 최적화)
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', function(event) {
+            touchStartX = event.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', function(event) {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 100;
+            const diff = touchStartX - touchEndX;
+            
+            // 좌우 스와이프로 화면 전환 (선택적 기능)
+            if (Math.abs(diff) > swipeThreshold) {
+                // 스와이프 동작이 필요한 경우 여기에 구현
+            }
+        }
+        
+        // 접근성 향상을 위한 키보드 네비게이션
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                const focusedElement = document.activeElement;
+                if (focusedElement.classList.contains('choice-btn') || 
+                    focusedElement.classList.contains('major-btn') ||
+                    focusedElement.classList.contains('btn-primary') ||
+                    focusedElement.classList.contains('btn-secondary') ||
+                    focusedElement.classList.contains('modal-btn')) {
+                    focusedElement.click();
+                    event.preventDefault();
+                }
+            }
+            
+            // ESC 키로 모달 닫기
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('feedbackModal');
+                if (modal.classList.contains('active')) {
+                    closeModal();
+                }
+            }
+        });
+        
+        // 화면 리더기를 위한 동적 내용 업데이트 안내
+        function announceScreenChange(screenName) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = `${screenName} 화면으로 이동했습니다.`;
+            document.body.appendChild(announcement);
+            
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 1000);
+        }
+        
+        // 모달 외부 클릭시 닫기
+        document.getElementById('feedbackModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        });
+        
+        // 페이지 로드 시 포커스 설정 (접근성)
+        window.addEventListener('load', function() {
+            const firstButton = document.querySelector('.major-btn');
+            if (firstButton) {
+                firstButton.focus();
+            }
+        });
+        
+        // 진동 피드백 (모바일)
+        function vibrateFeedback(type) {
+            if ('vibrate' in navigator) {
+                if (type === 'correct') {
+                    navigator.vibrate([100, 50, 100]); // 성공 패턴
+                } else {
+                    navigator.vibrate([200, 100, 200, 100, 200]); // 오답 패턴
+                }
+            }
+        }
+        
+        // 선택 시 진동 피드백 추가
+        function makeChoiceWithFeedback(situation, choice) {
+            let feedback;
+            
+            if (situation === 'major') {
+                const majorSituation = majorSituations[userMajor];
+                feedback = majorSituation.choices.find(c => c.value === choice);
+            } else {
+                feedback = feedbackMap[situation][choice];
+            }
+            
+            // 진동 피드백
+            vibrateFeedback(feedback.isCorrect ? 'correct' : 'incorrect');
+            
+            // 기존 makeChoice 함수 호출
+            makeChoice(situation, choice);
+        }
+        
+        // ARIA 레이블 동적 업데이트
+        function updateAriaLabels() {
+            const progressBar = document.getElementById('progressBar');
+            const progress = Math.round((currentScreen / totalScreens) * 100);
+            progressBar.setAttribute('aria-label', `진행률 ${progress}%`);
+            progressBar.setAttribute('role', 'progressbar');
+            progressBar.setAttribute('aria-valuenow', progress);
+            progressBar.setAttribute('aria-valuemin', '0');
+            progressBar.setAttribute('aria-valuemax', '100');
+        }
+        
+        // 화면 전환시 ARIA 업데이트
+        const originalShowScreen = showScreen;
+        showScreen = function(screenId) {
+            originalShowScreen(screenId);
+            updateAriaLabels();
+            
+            // 스크린 리더를 위한 제목 안내
+            const screenTitles = {
+                'start': '시작 화면',
+                'situation1': '첫 번째 상황: 버스 정류장',
+                'situation2': '두 번째 상황: 강의실',
+                'situation3': '세 번째 상황: 학생식당',
+                'major_situation': `네 번째 상황: ${userMajor}`,
+                'situation4': '다섯 번째 상황: 조별과제',
+                'situation5': '여섯 번째 상황: 엘리베이터',
+                'result': '결과 화면'
+            };
+            
+            if (screenTitles[screenId]) {
+                announceScreenChange(screenTitles[screenId]);
+            }
+        };
+        
+        // 초기 ARIA 설정
+        updateAriaLabels();
+    </script>
+</body>
+</html>
