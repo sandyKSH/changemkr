@@ -1,269 +1,1306 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>최매십이의 하루</title>
-    
-    <!-- 외부 CSS 연결: styles.css 파일을 이 HTML과 같은 폴더에 두었다고 가정 -->
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>매십이의 하루 - 시각장애인식 개선 체험</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: white;
+    min-height: 100vh;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.header {
+    background: linear-gradient(45deg, #4a90e2, #357abd);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(-50px, -50px) rotate(360deg); }
+}
+
+.header h1 {
+    font-size: 24px;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
+}
+
+.header p {
+    font-size: 14px;
+    opacity: 0.9;
+    position: relative;
+    z-index: 2;
+}
+
+.score-display {
+    background: rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-size: 14px;
+    position: relative;
+    z-index: 2;
+}
+
+.screen {
+    padding: 20px;
+    min-height: calc(100vh - 120px);
+    display: none;
+    animation: slideIn 0.3s ease-out;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.story-text {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #333;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid #4a90e2;
+}
+
+.time-badge {
+    display: inline-block;
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.step-indicator {
+    background: linear-gradient(45deg, #ffd93d, #ff6b6b);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.choice-container {
+    margin-top: 20px;
+}
+
+.choice-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.choice-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    line-height: 1.4;
+}
+
+.choice-btn:hover {
+    border-color: #4a90e2;
+    background: #f8f9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+}
+
+.feedback {
+    margin: 15px 0;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: none;
+}
+
+.feedback.show {
+    display: block;
+}
+
+.feedback.correct {
+    background: linear-gradient(45deg, #51cf66, #69db7c);
+    color: white;
+}
+
+.feedback.wrong {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    color: white;
+}
+
+.feedback.info {
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    color: #1976d2;
+}
+
+.progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #4a90e2, #357abd);
+    transition: width 0.3s ease;
+    z-index: 1000;
+}
+
+.character-img {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(45deg, #4a90e2, #357abd);
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: white;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-left: 4px solid #4a90e2;
+}
+
+.summary-title {
+    font-weight: bold;
+    color: #4a90e2;
+    margin-bottom: 8px;
+}
+
+.score-breakdown {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.score-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.score-item:last-child {
+    border-bottom: none;
+    font-weight: bold;
+    margin-top: 10px;
+    padding-top: 15px;
+    border-top: 2px solid #4a90e2;
+}
+
+.score-points {
+    font-weight: bold;
+}
+
+.score-points.positive {
+    color: #51cf66;
+}
+
+.score-points.negative {
+    color: #ff6b6b;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #4a90e2, #357abd);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+}
+
+.continue-btn {
+    background: linear-gradient(45deg, #51cf66, #69db7c);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 15px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.continue-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3);
+}
+
+.guide-card {
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 10px 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.learning-objective {
+    background: #fff3e0;
+    border: 1px solid #ffcc02;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.share-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.badge {
+    display: inline-block;
+    background: linear-gradient(45deg, #ffd93d, #ff6b6b);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.major-select {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.major-btn {
+    padding: 20px 15px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.major-btn:hover {
+    border-color: #4a90e2;
+    background: #f8f9ff;
+    transform: scale(1.05);
+}
+
+.major-icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.major-btn-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 15px;
+}
+
+.final-score-card {
+    background: linear-gradient(135deg, #4a90e2, #357abd);
+    color: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px 0;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+}
+
+.final-score-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+.final-score-number {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.score-unit {
+    font-size: 24px;
+    opacity: 0.8;
+}
+
+.score-grade {
+    font-size: 16px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 15px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.feedback-summary {
+    margin: 25px 0;
+}
+
+.feedback-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.feedback-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.feedback-title.positive {
+    color: #51cf66;
+}
+
+.feedback-title.improvement {
+    color: #ff6b6b;
+}
+
+.feedback-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feedback-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #555;
+    line-height: 1.4;
+}
+
+.feedback-list li:last-child {
+    border-bottom: none;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+}
+</style>
 </head>
 <body>
-    <div class="progress-bar" id="progressBar"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="container">
+    <div class="header">
+        <h1>🌟 매십이의 하루</h1>
+        <p>올바른 도움 방법을 배워보세요</p>
+        <div class="score-display">
+            <div>현재 점수: <span id="currentScore">0</span>점</div>
+            <div>진행도: <span id="progressText">0</span>/14</div>
+        </div>
+    </div>
+
+    <!-- 시작 화면 -->
+    <div class="screen active" id="start">
+        <div class="character-img">👨‍🎓</div>
+        <div class="story-text">
+            안녕! 나는 매십이야. 시각장애가 있는 대학생이지.<br><br>
+            오늘은 특별한 체험을 준비했어. 너와 함께 하루를 보내면서,
+            <strong>언제 도움이 필요한지</strong>와 <strong>어떻게 도와주는 것이 좋은지</strong>를 배워보자!<br><br>
+            각 상황마다 점수가 있고, 올바른 선택을 하면 높은 점수를 받을 수 있어.
+        </div>
+
+        <div class="learning-objective">
+            <strong>🎯 오늘의 학습 목표</strong><br>
+            • 도움이 필요한 상황과 불필요한 상황 구분하기<br>
+            • 시각장애인의 주체성을 존중하는 도움 방법 배우기<br>
+            • 구체적이고 효과적인 안내 방법 익히기<br>
+            • 안내견과 함께 있을 때의 올바른 에티켓 익히기
+        </div>
+
+        <button class="btn-primary" onclick="showScreen('situation1_step1')">
+            🚀 체험 시작하기
+        </button>
+    </div>
+
+    <!-- 상황 1-1: 버스 정류장 판단 -->
+    <div class="screen" id="situation1_step1">
+        <div class="time-badge">⏰ 08:30 AM</div>
+        <div class="step-indicator">1단계: 상황 판단</div>
+        <div class="story-text">
+            <strong>📍 버스 정류장</strong><br><br>
+            나는 지금 버스 정류장에 앉아 버스를 기다리는 중이야. 그런데 매십이가 안내견 보리와 함께 다가와 버스 도착 정보 방송을 들으며 가만히 서있어.<br><br>
+            여러 대의 버스가 지나가는데, 어떤 버스가 내가 타야 할 버스인지 확인이 어려워 보여.
+        </div>
+
+        <div class="learning-objective">
+            <strong>💡 학습 포인트:</strong> 도움이 필요한 상황인지 먼저 판단해보세요
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 내가 먼저 나서서 도와줘야하는 걸까?</div>
+            <button class="choice-btn" onclick="makeChoice(1, 1, 'need_help')">
+                ✅ 응, 도움이 필요해 보여!
+            </button>
+            <button class="choice-btn" onclick="makeChoice(1, 1, 'no_help')">
+                ❌ 아니, 스스로 해결할 수 있을 것 같아!
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback1_1"></div>
+        <button class="continue-btn" id="continue1_1" onclick="showScreen('situation1_step2')" style="display: none;">다음 단계로 →</button>
+    </div>
+
+    <!-- 상황 1-2: 버스 정류장 방법 -->
+    <div class="screen" id="situation1_step2">
+        <div class="time-badge">⏰ 08:30 AM</div>
+        <div class="step-indicator">2단계: 도움 방법 선택</div>
+        <div class="story-text">
+            <strong>📍 버스 정류장</strong><br><br>
+            맞아, 버스의 경우 동시에 여러대가 올 수도 있고 정확한 버스 도착 정보 확인이 다소 어려워. 때문에 먼저 나서서 도와주면 좋아.<br><br>
+            그런데 중요한 건 <strong>어떻게</strong> 도와주느냐야!
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 어떤 식으로 도와주는게 좋을까?</div>
+            <button class="choice-btn" onclick="makeChoice(1, 2, 'ask_first')">
+                💬 몇 번 버스를 기다리는 중인지 물어보며 버스가 오면 알려준다. (적극적)
+            </button>
+            <button class="choice-btn" onclick="makeChoice(1, 2, 'polite_approach')">
+                🤝 조심스래 다가가 도움이 필요한지 먼저 물어본다. (소극적)
+            </button>
+            <button class="choice-btn" onclick="makeChoice(1, 2, 'wrong_touch')">
+                👋 어깨를 가볍게 2번 두드리며 도움이 필요한지 물어본다.
+            </button>
+            <button class="choice-btn" onclick="makeChoice(1, 2, 'wrong_grab')">
+                🤲 팔을 잡아 신호를 준 후 도와주겠다고 말한다.
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback1_2"></div>
+        <button class="continue-btn" id="continue1_2" onclick="showScreen('situation2_step1')" style="display: none;">다음 상황으로 →</button>
+    </div>
+
+    <!-- 상황 2-1: 캠퍼스 판단 -->
+    <div class="screen" id="situation2_step1">
+        <div class="time-badge">⏰ 09:15 AM</div>
+        <div class="step-indicator">1단계: 상황 판단</div>
+        <div class="story-text">
+            <strong>📍 캠퍼스</strong><br><br>
+            강의실로 가는 중인데, 가는 길이 매십이와 겹쳐. 안내견과 함께 걸어오고 있는 중인데, 걷는 속도가 나보다 늦어.<br><br>
+            수업에 늦을 수도 있을 것 같은데...
+        </div>
+
+        <div class="learning-objective">
+            <strong>💡 학습 포인트:</strong> 안내견과 함께 있을 때의 상황을 판단해보세요
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 내가 먼저 나서서 도와줘야하는 걸까?</div>
+            <button class="choice-btn" onclick="makeChoice(2, 1, 'need_help')">
+                ✅ 응, 수업에 늦을 수도 있으니 도와주자!
+            </button>
+            <button class="choice-btn" onclick="makeChoice(2, 1, 'no_help')">
+                ❌ 아니, 안 도와줘도 안내견이 있으니 알아서 잘 올 것 같아!
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback2_1"></div>
+        <button class="continue-btn" id="continue2_1" onclick="showScreen('situation3_step1')" style="display: none;">다음 상황으로 →</button>
+    </div>
+
+    <!-- 상황 3-1: 건물 복도 판단 -->
+    <div class="screen" id="situation3_step1">
+        <div class="time-badge">⏰ 09:30 AM</div>
+        <div class="step-indicator">1단계: 상황 판단</div>
+        <div class="story-text">
+            <strong>📍 건물 복도</strong><br><br>
+            계속 걷다보니 매십이와 같은 건물까지 들어왔어. 강의실은 3층이라 난 엘리베이터로 가고 있는데, 매십이는 자꾸 주변을 두리번 거리고 있어.<br><br>
+            참고로 건물 안에는 점자블록이 없어.
+        </div>
+
+        <div class="learning-objective">
+            <strong>💡 학습 포인트:</strong> 점자블록이 없는 환경에서의 상황을 판단해보세요
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 내가 먼저 도와주는게 맞겠지?</div>
+            <button class="choice-btn" onclick="makeChoice(3, 1, 'need_help')">
+                ✅ 응, 도움이 필요해 보여!
+            </button>
+            <button class="choice-btn" onclick="makeChoice(3, 1, 'no_help')">
+                ❌ 아니, 스스로 해결할 수 있을 것 같아!
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback3_1"></div>
+        <button class="continue-btn" id="continue3_1" onclick="showScreen('situation3_step2')" style="display: none;">다음 단계로 →</button>
+    </div>
+
+    <!-- 상황 3-2: 건물 복도 방법 -->
+    <div class="screen" id="situation3_step2">
+        <div class="time-badge">⏰ 09:30 AM</div>
+        <div class="step-indicator">2단계: 도움 방법 선택</div>
+        <div class="story-text">
+            <strong>📍 건물 복도</strong><br><br>
+            매십이에게 말을 걸어봤더니, 엘리베이터가 아니라 화장실을 찾고 있었어.<br><br>
+            점자블록이 없는 건물에서는 길찾기가 어려울 수 있어.
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 어떤 식으로 도와주는게 좋을까?</div>
+            <button class="choice-btn" onclick="makeChoice(3, 2, 'direct_guide')">
+                🚶‍♀️ 화장실까지 직접 안내해주기로 한다. (적극적)
+            </button>
+            <button class="choice-btn" onclick="makeChoice(3, 2, 'verbal_guide')">
+                💬 "앞으로 20걸음 정도 가서 우측으로 10걸음 가면 여기 왼쪽에 화장실이 있어"라고 설명해준다. (소극적)
+            </button>
+            <button class="choice-btn" onclick="makeChoice(3, 2, 'wrong_dog')">
+                🐕 화장실까지 안내해주기 위해서 안내견 목줄을 잡고 직접 안내한다.
+            </button>
+            <button class="choice-btn" onclick="makeChoice(3, 2, 'wrong_complex')">
+                📍 "저기 행정실 앞까지 쭉 간 뒤에 오른쪽으로 돌면 103호 맞은 편에 있어"라고 구체적으로 설명해준다.
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback3_2"></div>
+        <button class="continue-btn" id="continue3_2" onclick="showScreen('situation4_step1')" style="display: none;">다음 상황으로 →</button>
+    </div>
+
+    <!-- 상황 4-1: 강의실 계단 판단 -->
+    <div class="screen" id="situation4_step1">
+        <div class="time-badge">⏰ 10:00 AM</div>
+        <div class="step-indicator">1단계: 상황 판단</div>
+        <div class="story-text">
+            <strong>📍 강의실 계단</strong><br><br>
+            강의실에 도착했어. 계단형 강의실이라 나와 매십이는 뒷자리라 계단을 올라가야해.<br><br>
+            매십이한테 안내견이 있긴하지만 혼자서 올라가기는 힘들 것 같은데...
+        </div>
+
+        <div class="learning-objective">
+            <strong>💡 학습 포인트:</strong> 안내견과 함께 계단을 오르는 상황을 판단해보세요
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 내가 도와주는게 좋겠지?</div>
+            <button class="choice-btn" onclick="makeChoice(4, 1, 'need_help')">
+                ✅ 응, 계단 올라가는 건 위험하고 힘들 것 같아!
+            </button>
+            <button class="choice-btn" onclick="makeChoice(4, 1, 'no_help')">
+                ❌ 아니, 안내견과 함께니까 큰 어려움 없이 올라갈 수 있을 것 같아!
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback4_1"></div>
+        <button class="continue-btn" id="continue4_1" onclick="showScreen('majorSelect')" style="display: none;">전공별 상황으로 →</button>
+    </div>
+
+    <!-- 전공 선택 화면 -->
+    <div class="screen" id="majorSelect">
+        <div class="character-img">🎓</div>
+        <div class="story-text">
+            이제 전공별 상황 체험을 해보자!<br><br>
+            너의 전공 계열을 선택해줘. 전공에 따라 맞춤형 상황이 준비되어 있어.
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🎓 당신의 전공 계열을 선택해주세요</div>
+            <div class="major-select">
+                <button class="major-btn" onclick="selectMajor('science')">
+                    <div class="major-icon">🔬</div>
+                    <div class="major-btn-title">이공계열</div>
+                    <div class="major-btn-subtitle">자연과학대, 생활과학대</div>
+                </button>
+                <button class="major-btn" onclick="selectMajor('engineering')">
+                    <div class="major-icon">⚙️</div>
+                    <div class="major-btn-title">공학계열</div>
+                    <div class="major-btn-subtitle">공과대학</div>
+                </button>
+                <button class="major-btn" onclick="selectMajor('medical')">
+                    <div class="major-icon">⚕️</div>
+                    <div class="major-btn-title">의학·보건계열</div>
+                    <div class="major-btn-subtitle">의과대, 간호대</div>
+                </button>
+                <button class="major-btn" onclick="selectMajor('humanities')">
+                    <div class="major-icon">📚</div>
+                    <div class="major-btn-title">인문사회과학계열</div>
+                    <div class="major-btn-subtitle">인문대, 사회대, 사범대</div>
+                </button>
+                <button class="major-btn" onclick="selectMajor('arts')">
+                    <div class="major-icon">🎨</div>
+                    <div class="major-btn-title">예체능계열</div>
+                    <div class="major-btn-subtitle">음악대, 예술체육대</div>
+                </button>
+                <button class="major-btn" onclick="selectMajor('business')">
+                    <div class="major-icon">💼</div>
+                    <div class="major-btn-title">융합·경영계열</div>
+                    <div class="major-btn-subtitle">경영대, 국제학부</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 단과대별 맞춤 상황 -->
+    <div class="screen" id="major_situation">
+        <div class="time-badge">⏰ 11:00 AM</div>
+        <div class="step-indicator">전공별 특별 상황</div>
+        <div class="story-text" id="major_story">
+            <!-- 단과대별 상황이 JavaScript로 삽입됨 -->
+        </div>
+
+        <div class="learning-objective">
+            <strong>💡 학습 포인트:</strong> 전공 특성에 맞는 도움 방법을 배워보세요
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 너라면 어떻게 할까?</div>
+            <div id="major_choices">
+                <!-- 단과대별 선택지가 JavaScript로 추가됨 -->
+            </div>
+        </div>
+
+        <div class="feedback" id="feedbackMajor"></div>
+        <button class="continue-btn" id="continueMajor" onclick="showScreen('situation5_step1')" style="display: none;">다음 상황으로 →</button>
+    </div>
+
+    <!-- 상황 5-1: 강의 진행 중 판단 -->
+    <div class="screen" id="situation5_step1">
+        <div class="time-badge">⏰ 11:30 AM</div>
+        <div class="step-indicator">1단계: 상황 판단</div>
+        <div class="story-text">
+            <strong>📍 강의실</strong><br><br>
+            매십이 옆자리에 앉게 됐어. 매십이의 한 쪽 귀에는 이어폰을 꼽고 있고, 옆에 앉은 사람은 뭔가를 엄청 열심히 필기 중이야.<br><br>
+            매십이는 조용히 수업을 듣고 있는 것 같아.
+        </div>
+
+        <div class="learning-objective">
+            <strong>💡 학습 포인트:</strong> 수업 중 상황에서 도움의 필요성을 판단해보세요
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 매십이 혼자서 수업 내용을 따라가기에는 벅차지 않을까? 내가 도와주고 싶은데 어떻게 하면 좋을까?</div>
+            <button class="choice-btn" onclick="makeChoice(5, 1, 'need_help')">
+                ✅ 응, 매십이 혼자 수업 따라가기는 힘들거야 먼저 도와주자!
+            </button>
+            <button class="choice-btn" onclick="makeChoice(5, 1, 'no_help')">
+                ❌ 아니, 가만히 있는 걸로봐서는 크게 어려움이 없는 것 같아서 안 도와줘도 될 것 같아!
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback5_1"></div>
+        <button class="continue-btn" id="continue5_1" onclick="showScreen('situation6_step1')" style="display: none;">다음 상황으로 →</button>
+    </div>
+
+    <!-- 상황 6-1: 점심 식당 키오스크 판단 -->
+    <div class="screen" id="situation6_step1">
+        <div class="time-badge">⏰ 12:30 PM</div>
+        <div class="step-indicator">1단계: 상황 판단</div>
+        <div class="story-text">
+            <strong>📍 학생식당</strong><br><br>
+            오전 수업을 마치고 점심을 먹으러 학생 식당에 왔어. 키오스크를 통해 식권을 뽑아야해.<br><br>
+            매십이도 나와 함께 줄을 서 있는데 키오스크 앞에서 조금 당황하는 것 같아.
+        </div>
+
+        <div class="learning-objective">
+            <strong>💡 학습 포인트:</strong> 디지털 접근성 문제와 선택권 보장의 중요성
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 내가 도움을 줘야할까?</div>
+            <button class="choice-btn" onclick="makeChoice(6, 1, 'need_help')">
+                ✅ 응, 혼자서 키오스크를 사용해 식권을 뽑기는 어려울 것 같아!
+            </button>
+            <button class="choice-btn" onclick="makeChoice(6, 1, 'no_help')">
+                ❌ 아니, 요즘은 키오스크가 생활화 되어 있으니까 혼자서도 가능할 것 같아!
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback6_1"></div>
+        <button class="continue-btn" id="continue6_1" onclick="showScreen('situation6_step2')" style="display: none;">다음 단계로 →</button>
+    </div>
+
+    <!-- 상황 6-2: 점심 식당 키오스크 방법 -->
+    <div class="screen" id="situation6_step2">
+        <div class="time-badge">⏰ 12:30 PM</div>
+        <div class="step-indicator">2단계: 도움 방법 선택</div>
+        <div class="story-text">
+            <strong>📍 학생식당</strong><br><br>
+            맞아, 키오스크는 시각장애인이 이용하기에는 다소 어렵기 때문에 주변인이 도와주면 좋아.<br><br>
+            하지만 여기서 중요한 건 내 <strong>선택권을 보장</strong>하면서 도와주는 거야.
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 이럴 땐 어떤 식으로 도와주는게 좋을까?</div>
+            <button class="choice-btn" onclick="makeChoice(6, 2, 'ask_help')">
+                💬 가까이 다가가 "도와줄까요?"라고 먼저 물어본다. (적극적)
+            </button>
+            <button class="choice-btn" onclick="makeChoice(6, 2, 'call_staff')">
+                👨‍🍳 부담스러워할 수 있기에 도움을 주실 수 있는 영양사 선생님을 부르러 간다. (소극적)
+            </button>
+            <button class="choice-btn" onclick="makeChoice(6, 2, 'wrong_touch')">
+                🤲 정확한 위치를 누르기 힘들기 때문에 다가가서 직접 손목을 잡아 대신 눌러준다.
+            </button>
+            <button class="choice-btn" onclick="makeChoice(6, 2, 'wrong_suggest')">
+                🏪 주변에 키오스크가 없는 일반 식당을 추천해주며 앞으로는 이 식당들을 이용하라고 말해준다.
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback6_2"></div>
+        <button class="continue-btn" id="continue6_2" onclick="showScreen('situation7_step1')" style="display: none;">다음 상황으로 →</button>
+    </div>
+
+    <!-- 상황 7-1: 팀플 중 상황 판단 -->
+    <div class="screen" id="situation7_step1">
+        <div class="time-badge">⏰ 14:00 PM</div>
+        <div class="step-indicator">1단계: 상황 판단</div>
+        <div class="story-text">
+            <strong>📍 강의실</strong><br><br>
+            한 학기 동안 진행할 팀플 조가 편성됐어. 나는 매십이와 같은 조야.<br><br>
+            첫 팀플이니만큼 매십이도 잘 모를텐데 역할 분담을 어떻게 할지 고민이야.
+        </div>
+
+        <div class="learning-objective">
+            <strong>💡 학습 포인트:</strong> 팀워크에서의 포용성과 역할 분담의 중요성
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 내가 먼저 나서서 도와주는게 좋겠지?</div>
+            <button class="choice-btn" onclick="makeChoice(7, 1, 'need_help')">
+                ✅ 응, 내가 도와주는게 힘이 될 거야.
+            </button>
+            <button class="choice-btn" onclick="makeChoice(7, 1, 'no_help')">
+                ❌ 아니, 도와주려고하면 오히려 더 부담을 느낄 거야.
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback7_1"></div>
+        <button class="continue-btn" id="continue7_1" onclick="showScreen('situation7_step2')" style="display: none;">다음 단계로 →</button>
+    </div>
+
+    <!-- 상황 7-2: 팀플 중 상황 방법 -->
+    <div class="screen" id="situation7_step2">
+        <div class="time-badge">⏰ 14:00 PM</div>
+        <div class="step-indicator">2단계: 도움 방법 선택</div>
+        <div class="story-text">
+            <strong>📍 강의실</strong><br><br>
+            맞아, 팀플은 신경 써야할 것도 많은 만큼 작은 도움이더라도 도와주는 것이 더 큰 도움이 돼.<br><br>
+            하지만 어떤 식으로 도와주는지가 중요해.
+        </div>
+
+        <div class="choice-container">
+            <div class="choice-title">🤔 어떤 식으로 도와주는게 좋을까?</div>
+            <button class="choice-btn" onclick="makeChoice(7, 2, 'ask_role')">
+                💬 무엇이 가능하고 어떤 역할을 하고 싶은지 물어보고 조율한다. (적극적)
+            </button>
+            <button class="choice-btn" onclick="makeChoice(7, 2, 'offer_help')">
+                🤝 역할 분담이 끝난후 별도로 어려운 부분이 있으면 필요한 부분을 도와주겠다고 말하라고 한다. (소극적)
+            </button>
+            <button class="choice-btn" onclick="makeChoice(7, 2, 'wrong_exclude')">
+                ❌ 어려운 역할은 하기 힘드니까 미리 제외하는 것이 좋아.
+            </button>
+            <button class="choice-btn" onclick="makeChoice(7, 2, 'wrong_replace')">
+                🔄 배려를 하면 오히려 역차별이라고 느낄 수 있으니 매십이의 역할을 뒤에서 내가 다 해준다.
+            </button>
+        </div>
+
+        <div class="feedback" id="feedback7_2"></div>
+        <button class="continue-btn" id="continue7_2" onclick="showScreen('summaryScreen')" style="display: none;">체험 마무리 →</button>
+    </div>
+
+    <!-- 요약 화면 -->
+    <div class="screen" id="summaryScreen">
+        <div class="character-img">🎉</div>
+        <div class="story-text">
+            오늘 하루 동안 매십이와 함께해줘서 고마워!<br><br>
+            너의 선택을 기반으로 결과를 정리해볼게.
+        </div>
+
+        <div class="final-score-card">
+            <div class="final-score-title">최종 점수</div>
+            <div class="final-score-number">
+                <span id="finalScore">0</span><span class="score-unit">점</span>
+            </div>
+            <div class="score-grade" id="scoreGrade"><!-- 등급이 JS로 삽입됨 --></div>
+        </div>
+
+        <div class="feedback-summary">
+            <div class="feedback-section">
+                <h3 class="feedback-title positive">✅ 잘한 점</h3>
+                <ul id="goodPoints" class="feedback-list">
+                    <!-- JS로 삽입 -->
+                </ul>
+            </div>
+            
+            <div class="feedback-section">
+                <h3 class="feedback-title improvement">📝 개선할 점</h3>
+                <ul id="improvementPoints" class="feedback-list">
+                    <!-- JS로 삽입 -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-secondary" onclick="downloadReport()">📄 리포트 저장하기</button>
+            <button class="btn-primary" onclick="location.reload()">🔁 다시 체험하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// 점수 맵핑: 각 상황별 선택지와 피드백, 정답여부, 점수
+const scoreMap = {
+    '1_1': {
+        'need_help': { feedback: "정답이에요! 버스 번호 확인은 시각적으로 어렵기 때문에 도움이 필요할 수 있어요.", correct: true, point: 10 },
+        'no_help': { feedback: "버스 번호는 음성으로 알 수 없기 때문에 도움이 필요해요.", correct: false, point: -5 }
+    },
+    '1_2': {
+        'ask_first': { feedback: "정답입니다! 구체적으로 물어보고 적극적으로 돕는 것이 좋아요.", correct: true, point: 10 },
+        'polite_approach': { feedback: "좋은 방법이에요! 조심스럽게 접근하는 것도 바람직해요.", correct: true, point: 8 },
+        'wrong_touch': { feedback: "동의 없이 신체 접촉은 불편함을 줄 수 있어요.", correct: false, point: -5 },
+        'wrong_grab': { feedback: "동의 없이 팔을 잡는 것은 적절하지 않아요.", correct: false, point: -8 }
+    },
+    '2_1': {
+        'need_help': { feedback: "안내견과 함께 있을 때는 대부분 도움이 필요하지 않아요.", correct: false, point: -5 },
+        'no_help': { feedback: "정답이에요! 안내견과 함께 있을 때는 스스로 잘 할 수 있어요.", correct: true, point: 10 }
+    },
+    '3_1': {
+        'need_help': { feedback: "맞아요! 점자블록이 없는 환경에서는 도움이 필요해요.", correct: true, point: 10 },
+        'no_help': { feedback: "점자블록이 없어서 길찾기가 어려운 상황이에요.", correct: false, point: -5 }
+    },
+    '3_2': {
+        'direct_guide': { feedback: "정답이에요! 직접 안내해주는 것이 가장 확실한 방법이에요.", correct: true, point: 10 },
+        'verbal_guide': { feedback: "좋은 방법이에요! 구체적인 설명도 도움이 돼요.", correct: true, point: 8 },
+        'wrong_dog': { feedback: "절대 안 돼요! 안내견을 함부로 만지거나 조작하면 안 됩니다.", correct: false, point: -10 },
+        'wrong_complex': { feedback: "너무 복잡한 설명은 오히려 혼란을 줄 수 있어요.", correct: false, point: -3 }
+    },
+    '4_1': {
+        'need_help': { feedback: "안내견은 계단도 잘 안내할 수 있어요.", correct: false, point: -3 },
+        'no_help': { feedback: "정답이에요! 안내견과 함께라면 계단도 문제없어요.", correct: true, point: 10 }
+    },
+    '5_1': {
+        'need_help': { feedback: "이어폰을 사용하고 있다는 것은 스크린리더 등으로 수업을 듣고 있다는 뜻이에요.", correct: false, point: -3 },
+        'no_help': { feedback: "정답이에요! 조용히 수업을 듣고 있을 때는 방해하지 않는 것이 좋아요.", correct: true, point: 10 }
+    },
+    '6_1': {
+        'need_help': { feedback: "정답입니다! 키오스크는 시각장애인이 혼자 사용하기 어려운 대표적인 기기예요.", correct: true, point: 10 },
+        'no_help': { feedback: "키오스크는 터치스크린이라 시각장애인이 사용하기 어려워요.", correct: false, point: -5 }
+    },
+    '6_2': {
+        'ask_help': { feedback: "정답이에요! 먼저 의사를 묻고 적극적으로 도와주는 것이 좋아요.", correct: true, point: 10 },
+        'call_staff': { feedback: "좋은 방법이에요! 전문 도움을 요청하는 것도 바람직해요.", correct: true, point: 8 },
+        'wrong_touch': { feedback: "동의 없이 신체 접촉은 불편함을 줄 수 있어요.", correct: false, point: -8 },
+        'wrong_suggest': { feedback: "근본적인 해결책이 아니에요. 접근성 개선이 더 중요해요.", correct: false, point: -5 }
+    },
+    '7_1': {
+        'need_help': { feedback: "정답이에요! 팀플에서는 적절한 도움과 배려가 필요해요.", correct: true, point: 10 },
+        'no_help': { feedback: "적절한 도움은 부담이 아니라 배려예요.", correct: false, point: -3 }
+    },
+    '7_2': {
+        'ask_role': { feedback: "정답입니다! 본인의 의사를 존중하며 역할을 조율하는 것이 가장 좋아요.", correct: true, point: 10 },
+        'offer_help': { feedback: "좋은 방법이에요! 필요시 도움을 제공하겠다는 의사표현이 좋아요.", correct: true, point: 8 },
+        'wrong_exclude': { feedback: "미리 배제하는 것은 차별적인 접근이에요.", correct: false, point: -8 },
+        'wrong_replace': { feedback: "대신 해주는 것은 진정한 도움이 아니에요.", correct: false, point: -5 }
+    }
+};
+
+let currentScore = 0;
+let progress = 0;
+const totalSteps = 8;
+let scoreHistory = [];
+
+function makeChoice(situation, step, choiceKey) {
+    const key = `${situation}_${step}`;
+    const feedbackDiv = document.getElementById(`feedback${situation}_${step}`);
+    const continueBtn = document.getElementById(`continue${situation}_${step}`);
+    const data = scoreMap[key]?.[choiceKey] || { feedback: "알 수 없는 선택입니다.", correct: false, point: 0 };
     
-    <div class="container">
-        <div class="header">
-            <h1>🌟 매십이의 하루</h1>
-            <p>너라면 어떻게 행동할래?</p>
-        </div>
+    feedbackDiv.className = 'feedback show ' + (data.correct ? 'correct' : 'wrong');
+    feedbackDiv.textContent = data.feedback;
+    continueBtn.style.display = 'block';
 
-        <!-- 시작 화면 -->
-        <div class="screen active" id="start">
-            <div class="character-img">👨‍🎓</div>
-            <div class="story-text">
-                안녕! 나는 매십이야. 시각장애가 있는 대학생이지.<br><br>
-                오늘도 학교에 간다. 나에겐 안내견 '보리'가 있고, 스크린리더와 한소네가 있어.
-                그리고... 가끔 귀찮은 눈치들도 있지만 말이야.<br><br>
-                <strong>너도 나와 함께 하루를 보내볼래?</strong>
-            </div>
+    currentScore += data.point;
+    progress++;
 
-            <!-- 새로운 동기부여 섹션 -->
-            <div style="text-align: center; margin: 20px 0;">
-                <div class="motivation-badge">
-                    💡 체험 종료 시, 당신의 '도움 유형'이 분석됩니다!
-                </div>
-                <p style="font-size: 14px; color: #666; margin-top: 10px;">
-                    도우미, 동반자, 시스템 개선자 중 당신은 어떤 사람일까요?
-                </p>
-            </div>
+    document.getElementById('currentScore').textContent = currentScore;
+    document.getElementById('progressText').textContent = progress;
+    document.getElementById('progressBar').style.width = `${(progress / totalSteps) * 100}%`;
+
+    scoreHistory.push({ key, choiceKey, ...data });
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    if (id === 'summaryScreen') {
+        generateFinalReport();
+    }
+}
+
+function selectMajor(major) {
+    const majorData = {
+        science: {
+            title: "이공계열 실험 수업",
+            text: "오늘은 실험이 있는 날이야. 개별적으로 수업 시간 내에 활동을 마무리해야해. 오늘 수업에는 매십이의 수업 도우미가 보이질 않아. 그리고 다른 학생들보다 진행속도가 느리고 힘들어하는 것 같은데...",
+            choices: {
+                'help_needed': { text: "응, 너무 뒤쳐지지 않을 정도로만 도와주면 좋을 것 같아.", correct: true, point: 10 },
+                'wait_request': { text: "아니, 먼저 도와달라고 하기 전에는 안 도와주는게 예의야.", correct: false, point: -5 }
+            },
+            step2: {
+                'offer_help': { text: "도움이 필요하다면 내가 도와줄테니 말해줘라고 말한다. (적극적)", correct: true, point: 10 },
+                'check_progress': { text: "중간 중간 잘 진행되고 어려운 부분은 없는지 살며시 물어본다. (소극적)", correct: true, point: 8 },
+                'do_for_them': { text: "실험을 단계별로 하나씩 대신해주면서 알아듣기 쉽게 설명해준다.", correct: false, point: -8 },
+                'watch_correct': { text: "옆에서 실험하는 걸 지켜보면서 잘 못 될때마다 잡아준다.", correct: false, point: -5 }
+            }
+        },
+        engineering: {
+            title: "공학계열 조립 실습",
+            text: "오늘은 기계 조립 실습이 있는 날이야. 제품 조립서를 직접 보고 만들어야해서 굉장히 복잡해. 매십이가 잘 활동할 수 있도록...",
+            choices: {
+                'help_needed': { text: "응, 실습인 만큼 내가 도와주면 더욱 도움이 될 거야.", correct: true, point: 10 },
+                'too_much': { text: "아니, 너무 과도한 배려는 오히려 불편하게 만들 수도 있어.", correct: false, point: -3 }
+            },
+            step2: {
+                'explain_parts': { text: "부품 하나하나의 명칭과 최종 조립물의 형태를 말로 설명해준다. (적극적)", correct: true, point: 10 },
+                'offer_when_stuck': { text: "조립하다 막히는 부분이 있으면 나에게 물어보라고 한다. (소극적)", correct: true, point: 8 },
+                'tell_everything': { text: "부품 별로 어떨때 쓰이는지와 어떻게 조립해야하는지 순서를 다 알려준다.", correct: false, point: -5 },
+                'do_difficult': { text: "어려워보이는 부분의 조립은 먼저 나서서 조립해준다.", correct: false, point: -8 }
+            }
+        },
+        medical: {
+            title: "의학·보건계열 시험",
+            text: "전공 범위가 많다보니 시험도 자주 있는 편이야. 이번주에 첫 시험이 있는데, 오픈북 시험이라고해. 매십이에게는 적합하지 않을 것 같은데...",
+            choices: {
+                'ask_first': { text: "응, 매십이가 부담스럽지 않게끔 먼저 의사를 물어보고", correct: true, point: 10 },
+                'too_much_interference': { text: "아니, 당사자의 동의를 떠나 너무 과한 참견일 수도 있어 자칫 부담스럽게 느낄 수도 있어.", correct: false, point: -5 }
+            },
+            step2: {
+                'visit_prof_together': { text: "당사자 의사를 확인후 교수님께 함께 찾아가 적합한 시험 방식에 대해 여쭤본다. (적극적)", correct: true, point: 10 },
+                'suggest_talk': { text: "당사자에게 먼저 물어본 후 교수님께 말씀드려볼 수 있도록 권유한다. (소극적)", correct: true, point: 8 },
+                'email_quietly': { text: "당사자를 생각해서 교수님께 조용히 건의 메일을 드린다.", correct: false, point: -8 },
+                'suggest_school': { text: "당사자의 편의성을 생각해 적합한 방식으로 시험이 치뤄질 수 있도록 학교 측에 건의한다.", correct: false, point: -5 }
+            }
+        },
+        humanities: {
+            title: "인문사회과학계열 토론 수업",
+            text: "수업중 조를 구성해 토론하는 시간이 됐어. 다들 매십이의 안내견을 보며 신기해하며 안내견을 만지려하고 있고 매십이는 이를 조금 부담스러워하는 것 같아.",
+            choices: {
+                'correct_etiquette': { text: "응, 매십이도 부담스러워하고 안내견을 만지는 건 에티켓에 어긋난다고 알고 있어.", correct: true, point: 10 },
+                'let_them_bond': { text: "아니, 안내견을 만지며 빨리 친해질 수 있을거고 매십이는 많은 관심이 부끄러운 걸꺼야.", correct: false, point: -8 }
+            },
+            step2: {
+                'tell_etiquette': { text: "그 자리에서 허락없이 안내견을 만지고 부르는 행위는 에티켓에 어긋난다고 조원들에게 말해준다. (적극적)", correct: true, point: 10 },
+                'gesture_stop': { text: "하지말라는 제스쳐와 함께 안내견을 허락 없이 함부로 대하는 것은 실례라고 말한다. (소극적)", correct: true, point: 8 },
+                'change_subject': { text: "지금은 수업 중이니 수업에 집중하자고 말해서 불편한 상황을 유하게 넘긴다.", correct: false, point: -5 },
+                'partial_correct': { text: "지금은 앉아 있으니 괜찮지만 시각장애인이 이동중일 때 안내견을 부르거나 만지는 행동은 잘 못 된거라고 말한다.", correct: false, point: -3 }
+            }
+        },
+        arts: {
+            title: "예체능계열 활동 수업",
+            text: "매십이와 함께 전공 수업을 듣고 있는 중이야. 교수님께서 활동적인 과제를 내주셨어. 매십이는 앞을 볼 수 없어서 힘들 것 같은데...",
+            choices: {
+                'help_needed': { text: "응, 도와주는 것이 좋을 것 같아.", correct: true, point: 10 },
+                'burden_concern': { text: "아니, 오히려 역차별이나 과도한 배려처럼 부담감을 느낄 수 있을 것 같아.", correct: false, point: -5 }
+            },
+            step2: {
+                'continuous_feedback': { text: "활동을 하나씩 잘 따라올 수 있도록 옆에서 계속 지켜보며 피드백을 해준다. (적극적)", correct: true, point: 10 },
+                'ask_specific': { text: "어떤 부분이 어려운지 구체적으로 물어본 후 도와준다. (소극적)", correct: true, point: 8 },
+                'do_instead': { text: "앞이 안보여 활동을 수행하기 힘드니 내가 직접 대신 해준다.", correct: false, point: -8 },
+                'ask_prof_easier': { text: "교수님께 말씀드려 매십이가 좀 더 쉽게 수행할 수 있도록 활동 난이도를 조절해달라고 정중히 요청 드린다.", correct: false, point: -5 }
+            }
+        },
+        business: {
+            title: "융합·경영계열 분석 수업",
+            text: "매십이와 함께 경영학 수업을 듣고 있는 중이야. 이번에는 교수님께서 통계자료를 보며 원인이 무엇인지 분석후 간단히 발표 준비를 하라고 하셨어. 혼자서는 힘들 것 같은데...",
+            choices: {
+                'help_needed': { text: "응, 힘든 부분을 내가 도와주는게 좋을 것 같아!", correct: true, point: 10 },
+                'materials_enough': { text: "아니, 수업자료도 잘 나와 있으니 굳이 그럴 필요는 없을 것 같아.", correct: false, point: -5 }
+            },
+            step2: {
+                'read_data': { text: "그림 속 통계자료의 수치가 몇인지 하나씩 따라 읽어준후 원인을 생각해볼 수 있도록 한다. (적극적)", correct: true, point: 10 },
+                'ask_difficulty': { text: "혹시 어려운 부분이 있는지 물어본 후 도와준다. (소극적)", correct: true, point: 8 },
+                'explain_meaning': { text: "각각의 통계자료가 어떤 의미를 가지는지 하나씩 알려준다.", correct: false, point: -5 },
+                'give_answer': { text: "통계자료가 무엇이 원인인지 설명해주고 그 이유를 말해보라고 한다.", correct: false, point: -8 }
+            }
+        }
+    };
+
+    const data = majorData[major];
+    if (!data) return;
+
+    document.getElementById('major_story').innerHTML = `
+        <strong>📍 ${data.title}</strong><br><br>
+        ${data.text}
+    `;
+
+    // 첫 번째 단계 선택지 생성
+    const container = document.getElementById('major_choices');
+    container.innerHTML = '';
+
+    Object.entries(data.choices).forEach(([key, val]) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = val.text;
+        btn.onclick = () => {
+            // 첫 번째 단계 피드백
+            const feedback = document.getElementById('feedbackMajor');
+            feedback.className = 'feedback show ' + (val.correct ? 'correct' : 'wrong');
+            feedback.textContent = val.correct
+                ? "맞아, 이런 상황에서는 도움이 필요해. 어떤 방식으로 도와주는게 좋을까?"
+                : "이 상황에서는 도움이 필요한 편이야. 다시 생각해보자.";
             
-            <div class="choice-container">
-                <div class="choice-title">먼저, 당신은 어느 단과대 학생인가요?</div>
-                <div class="major-select">
-                    <button class="major-btn" onclick="selectMajor('자연대')">🔬 자연대</button>
-                    <button class="major-btn" onclick="selectMajor('공대')">⚙️ 공대</button>
-                    <button class="major-btn" onclick="selectMajor('경영대')">📊 경영대</button>
-                    <button class="major-btn" onclick="selectMajor('사범대')">📚 사범대</button>
-                    <button class="major-btn" onclick="selectMajor('디자인')">🎨 디자인</button>
-                    <button class="major-btn" onclick="selectMajor('인문대')">📖 인문대</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 상황 1: 버스 정류장 -->
-        <div class="screen" id="situation1">
-            <div class="time-badge">⏰ 08:30 AM</div>
-            <div class="story-text">
-                <strong>📍 버스 정류장</strong><br><br>
-                보리와 함께 버스 정류장에 도착했어. 여러 대의 버스가 지나가는데,
-                어떤 버스가 내가 타야 할 '142번'인지 모르겠어.<br><br>
-                너는 나 옆에 서 있다가 이 상황을 봤어.
-            </div>
+            currentScore += val.point;
+            progress++;
+            document.getElementById('currentScore').textContent = currentScore;
+            document.getElementById('progressText').textContent = progress;
+            document.getElementById('progressBar').style.width = `${(progress / totalSteps) * 100}%`;
             
-            <div class="choice-container">
-                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
-                <button class="choice-btn" onclick="makeChoice(1, 'help')">
-                    🗣️ "저 버스가 142번이에요!"라고 알려주기
-                </button>
-                <button class="choice-btn" onclick="makeChoice(1, 'wait')">
-                    ⏳ 매십이가 스스로 해결할 때까지 기다리기
-                </button>
-                <button class="choice-btn" onclick="makeChoice(1, 'ask')">
-                    💬 "도움이 필요하세요?"라고 먼저 물어보기
-                </button>
-            </div>
-        </div>
+            scoreHistory.push({ 
+                key: `major_${major}_step1`, 
+                choiceKey: key, 
+                feedback: feedback.textContent, 
+                point: val.point 
+            });
 
-        <!-- 상황 2: 강의실 -->
-        <div class="screen" id="situation2">
-            <div class="time-badge">⏰ 10:00 AM</div>
-            <div class="story-text">
-                <strong>📍 강의실</strong><br><br>
-                교수님이 PPT를 띄우셨어. 화면엔 복잡한 표와 그래프만 가득하고,
-                설명 없이 "이 데이터를 보시면..."이라고만 하셔.<br><br>
-                스크린리더로는 내용을 전혀 파악할 수 없어. 너는 내 옆자리에 앉아있어.
-            </div>
-            
-            <div class="choice-container">
-                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
-                <button class="choice-btn" onclick="makeChoice(2, 'whisper')">
-                    🗣️ 표 내용을 작은 소리로 설명해주기
-                </button>
-                <button class="choice-btn" onclick="makeChoice(2, 'note')">
-                    📝 수업 후에 필기 내용 공유해주기
-                </button>
-                <button class="choice-btn" onclick="makeChoice(2, 'professor')">
-                    🙋‍♀️ 교수님께 설명을 요청하는 손 들기
-                </button>
-            </div>
-        </div>
-
-        <!-- 상황 3: 식당 -->
-        <div class="screen" id="situation3">
-            <div class="time-badge">⏰ 12:30 PM</div>
-            <div class="story-text">
-                <strong>📍 학생식당</strong><br><br>
-                점심시간이야. 키오스크 앞에서 한참 서 있는데,
-                터치스크린이라 주문할 수가 없어. 뒤에 사람들이 기다리고 있는 것 같아서 조급해져.<br><br>
-                너는 내 뒤에서 줄을 서고 있어.
-            </div>
-            
-            <div class="choice-container">
-                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
-                <button class="choice-btn" onclick="makeChoice(3, 'help_order')">
-                    🤝 직접 주문을 도와드리기
-                </button>
-                <button class="choice-btn" onclick="makeChoice(3, 'explain_menu')">
-                    📋 메뉴를 읽어드리고 원하는 것 물어보기
-                </button>
-                <button class="choice-btn" onclick="makeChoice(3, 'staff')">
-                    👥 식당 직원에게 도움 요청하기
-                </button>
-            </div>
-        </div>
-
-        <!-- 단과대별 맞춤 상황 -->
-        <div class="screen" id="major_situation">
-            <div class="time-badge">⏰ 14:00 PM</div>
-            <div class="story-text" id="major_story">
-                <!-- 여기에 단과대별 상황이 들어감 -->
-            </div>
-            
-            <div class="choice-container">
-                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
-                <div id="major_choices">
-                    <!-- 여기에 단과대별 선택지가 들어감 -->
-                </div>
-            </div>
-        </div>
-
-        <!-- 상황 4: 조별과제 -->
-        <div class="screen" id="situation4">
-            <div class="time-badge">⏰ 16:00 PM</div>
-            <div class="story-text">
-                <strong>📍 스터디룸</strong><br><br>
-                조별과제 발표 준비 중이야. 팀원들이 만든 PPT는 도표와 이미지 중심이라
-                내가 발표할 부분을 이해하기 어려워.<br><br>
-                "매십아, 너는 이 부분 맡아."라고 하는데... 너도 같은 팀이야.
-            </div>
-            
-            <div class="choice-container">
-                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
-                <button class="choice-btn" onclick="makeChoice(4, 'explain')">
-                    📊 슬라이드 내용을 자세히 설명해주기
-                </button>
-                <button class="choice-btn" onclick="makeChoice(4, 'text')">
-                    📝 텍스트 버전 대본 함께 작성하기
-                </button>
-                <button class="choice-btn" onclick="makeChoice(4, 'role')">
-                    🔄 매십이에게 맞는 역할 다시 분배 제안하기
-                </button>
-            </div>
-        </div>
-
-        <!-- 상황 5: 엘리베이터 -->
-        <div class="screen" id="situation5">
-            <div class="time-badge">⏰ 18:00 PM</div>
-            <div class="story-text">
-                <strong>📍 엘리베이터 앞</strong><br><br>
-                하루 일과를 마치고 엘리베이터를 기다리고 있어.
-                엘리베이터가 도착했는데 어느 쪽 문이 열렸는지, 안에 사람이 얼마나 있는지 모르겠어.<br><br>
-                너도 같은 엘리베이터를 기다리고 있어.
-            </div>
-            
-            <div class="choice-container">
-                <div class="choice-title">🤔 너라면 어떻게 할까?</div>
-                <button class="choice-btn" onclick="makeChoice(5, 'guide')">
-                    👉 "왼쪽에 문이 열렸어요, 사람이 별로 없어요"라고 안내
-                </button>
-                <button class="choice-btn" onclick="makeChoice(5, 'arm')">
-                    🤝 팔을 살짝 잡고 엘리베이터까지 안내
-                </button>
-                <button class="choice-btn" onclick="makeChoice(5, 'together')">
-                    🚶‍♂️ "같이 타요"라고 말하며 함께 이동
-                </button>
-            </div>
-        </div>
-
-        <!-- 결과 화면 -->
-        <div class="screen" id="result">
-            <div class="character-img">🎉</div>
-            <div class="story-text">
-                <strong>수고했어! 너와 함께한 하루가 정말 의미있었어.</strong><br><br>
-                너는 매십이의 하루 속에서 이런 선택들을 했어:
-            </div>
-            
-            <div id="choice_summary">
-                <!-- 선택 요약이 여기에 들어감 -->
-            </div>
-
-            <!-- 새로운 결과 공유 카드 -->
-            <div class="result-card" id="resultCard">
-                <div class="result-type" id="resultType">
-                    🤝 소통형 동반자
-                </div>
-                <div class="result-description" id="resultDescription">
-                    상대방의 의견을 먼저 묻고 함께 해결책을 찾으려는 배려심이 깊어요.
-                </div>
-            </div>
-
-            <div class="feedback">
-                <strong>💡 알아두면 좋은 팁</strong><br>
-                시각장애인을 도울 때는 먼저 "도움이 필요하세요?"라고 물어보는 것이 좋아요.
-                갑자기 팔을 잡거나 밀지 말고, 구체적으로 상황을 설명해주세요!
-            </div>
-
-            <div class="guide-card">
-                <strong>🤝 이럴 때 이렇게 해주세요</strong><br>
-                • 길 안내: "3시 방향으로 2미터" 같이 구체적으로<br>
-                • 계단: "위로 올라가는 계단 5개" 미리 알려주기<br>
-                • 문서: 표나 그래프는 내용을 간략히 설명<br>
-                • 키오스크: 메뉴 읽어주고 선택권 주기
-            </div>
-
-            <div class="share-section">
-                <div class="badge">🏆 공감 체험 완료!</div>
-                <p>친구들과 함께 체험해보세요</p>
+            // 두 번째 단계로 진행
+            setTimeout(() => {
+                // 두 번째 단계 선택지 생성
+                container.innerHTML = '';
                 
-                <div class="share-buttons">
-                    <button class="share-btn twitter" onclick="shareToTwitter()">
-                        🐦 트위터 공유
-                    </button>
-                    <button class="share-btn kakao" onclick="shareToKakao()">
-                        💬 카카오 공유
-                    </button>
-                </div>
+                Object.entries(data.step2).forEach(([key2, val2]) => {
+                    const btn2 = document.createElement('button');
+                    btn2.className = 'choice-btn';
+                    btn2.textContent = val2.text;
+                    btn2.onclick = () => {
+                        const feedback2 = document.getElementById('feedbackMajor');
+                        feedback2.className = 'feedback show ' + (val2.correct ? 'correct' : 'wrong');
+                        feedback2.textContent = val2.correct
+                            ? "정답이에요! 이런 방식으로 도와주는 것이 가장 효과적이에요."
+                            : "좀 더 나은 방법이 있을 것 같아요. 상대방의 입장을 더 고려해보세요.";
+                        
+                        currentScore += val2.point;
+                        progress++;
+                        document.getElementById('currentScore').textContent = currentScore;
+                        document.getElementById('progressText').textContent = progress;
+                        document.getElementById('progressBar').style.width = `${(progress / totalSteps) * 100}%`;
+                        
+                        scoreHistory.push({ 
+                            key: `major_${major}_step2`, 
+                            choiceKey: key2, 
+                            feedback: feedback2.textContent, 
+                            point: val2.point 
+                        });
+                        
+                        document.getElementById('continueMajor').style.display = 'block';
+                    };
+                    container.appendChild(btn2);
+                });
                 
-                <button class="btn-primary" onclick="downloadResultImage()">
-                    📸 결과 이미지 저장하기
-                </button>
-                <button class="btn-secondary" onclick="restart()">
-                    🔄 다시 체험하기
-                </button>
-            </div>
-        </div>
-    </div>
+                // 질문 제목 변경
+                document.querySelector('#major_situation .choice-title').textContent = '🤔 어떤 식으로 도와주는게 좋을까?';
+            }, 2000);
+        };
+        container.appendChild(btn);
+    });
 
-    <!-- 피드백 모달 -->
-    <div class="modal" id="feedbackModal">
-        <div class="modal-content">
-            <div class="modal-character" id="modalCharacter">😊</div>
-            <div class="modal-title" id="modalTitle">좋은 선택이에요!</div>
-            <div class="modal-feedback" id="modalFeedback">
-                먼저 "도움이 필요하세요?"라고 물어보는 것은 상대방을 존중하는 마음이에요!
-            </div>
-            <div>
-                <button class="modal-btn retry-btn" id="retryBtn" onclick="retryChoice()" style="display: none;">
-                    🔄 다시 선택하기
-                </button>
-                <button class="modal-btn" onclick="closeModal()">
-                    ➡️ 다음으로
-                </button>
-            </div>
-        </div>
-    </div>
+    showScreen('major_situation');
+}
 
-    <!-- 외부 JS 연결: script.js 파일을 이 HTML과 같은 폴더에 두었다고 가정 -->
-    <script src="script.js"></script>
+function generateFinalReport() {
+    document.getElementById('finalScore').textContent = currentScore;
+    
+    // 점수 등급 설정
+    const gradeElement = document.getElementById('scoreGrade');
+    let grade = '';
+    if (currentScore >= 70) grade = '나는... 🏆 시각장애 도움 전문가';
+    else if (currentScore >= 50) grade = '나는... 🌟 시각장애인을 배려하는 동반자';
+    else if (currentScore >= 30) grade = '나는... 📚 도움 방법을 학습 중인 친구';
+    else grade = '나는... 🌱 도움 방법을 알아가는 새싹';
+    gradeElement.textContent = grade;
+    
+    // 피드백 분석
+    const goodChoices = scoreHistory.filter(item => item.point > 0);
+    const badChoices = scoreHistory.filter(item => item.point < 0);
+    
+    // 잘한 점 3가지
+    const goodPoints = [
+        "버스 정류장에서 도움이 필요한 상황을 잘 판단했어요",
+        "시각장애인의 의사를 먼저 물어보아요", 
+        "안내견과 함께 있을 때는 방해하지 않는 것이 좋아요",
+        "점자블록이 없는 환경에서 도움의 필요성을 잘 파악했어요",
+        "키오스크 같은 접근성 문제를 이해하고 있어요",
+        "팀워크에서 배려하는 마음을 갖고 있어요"
+    ];
+    
+    // 개선할 점 3가지  
+    const improvementPoints = [
+        "안내견이 있을 때는 대부분 도움이 불필요해요",
+        "동의 없이 신체 접촉을 하는 것은 피해주세요",
+        "안내견을 함부로 만지거나 부르지 않아요",
+        "너무 복잡한 설명보다는 간단명료하게 안내해주세요",
+        "대신 해주기보다는 함께 할 수 있는 방법을 찾아보아요",
+        "수업 중일 때는 조용히 지켜봐주는 것이 좋아요"
+    ];
+    
+    // 잘한 점 표시 (최대 3개)
+    const goodPointsList = document.getElementById('goodPoints');
+    goodPointsList.innerHTML = '';
+    const selectedGoodPoints = goodPoints.slice(0, Math.min(3, goodChoices.length));
+    selectedGoodPoints.forEach(point => {
+        const li = document.createElement('li');
+        li.textContent = point;
+        goodPointsList.appendChild(li);
+    });
+    
+    // 개선할 점 표시 (최대 3개)
+    const improvementPointsList = document.getElementById('improvementPoints');
+    improvementPointsList.innerHTML = '';
+    const selectedImprovements = improvementPoints.slice(0, Math.min(3, badChoices.length || 1));
+    selectedImprovements.forEach(point => {
+        const li = document.createElement('li');
+        li.textContent = point;
+        improvementPointsList.appendChild(li);
+    });
+}
+
+function downloadReport() {
+    const today = new Date().toLocaleDateString('ko-KR');
+    const grade = document.getElementById('scoreGrade').textContent;
+    
+    let report = `=== 매십이의 하루 체험 리포트 ===\n`;
+    report += `날짜: ${today}\n`;
+    report += `최종 점수: ${currentScore}점\n`;
+    report += `등급: ${grade}\n\n`;
+    
+    report += `=== 잘한 점 ===\n`;
+    const goodPoints = document.querySelectorAll('#goodPoints li');
+    goodPoints.forEach((item, index) => {
+        report += `${index + 1}. ${item.textContent}\n`;
+    });
+    
+    report += `\n=== 개선할 점 ===\n`;
+    const improvementPoints = document.querySelectorAll('#improvementPoints li');
+    improvementPoints.forEach((item, index) => {
+        report += `${index + 1}. ${item.textContent}\n`;
+    });
+    
+    report += `\n=== 학습 내용 ===\n`;
+    report += `• 도움이 필요한 상황과 불필요한 상황 구분하기\n`;
+    report += `• 시각장애인의 주체성을 존중하는 도움 방법 배우기\n`;
+    report += `• 구체적이고 효과적인 안내 방법 익히기\n`;
+    report += `• 안내견과 함께 있을 때의 올바른 에티켓 익히기\n\n`;
+    report += `감사합니다! 🌟`;
+    
+    const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `매십이의하루_체험리포트_${today.replace(/\./g, '')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+</script>
 </body>
 </html>
