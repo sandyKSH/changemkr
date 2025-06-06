@@ -1,5 +1,9 @@
 // --- 점수 맵핑 데이터 ---
 // situation_step 형태의 key 아래, 각 choiceKey에 feedback, correct, point 정보를 저장
+let selectedSituation = null;
+let selectedStep = null;
+let selectedChoice = null;
+
 const scoreMap = {
   '1_1': {
     'need_help': { feedback: "정답이에요! 버스 번호 확인은 시각적으로 어렵기 때문에 도움이 필요할 수 있어요.", correct: true, point: 10 },
@@ -152,25 +156,53 @@ let scoreHistory = [];
 // --- makeChoice 함수: 버튼 클릭 시 호출 ---
 // situation: 숫자(1~7), step: 숫자(1~2), choiceKey: 문자열
 function makeChoice(situation, step, choiceKey) {
-  const key = `${situation}_${step}`; // 예: "1_1"
-  const feedbackDiv = document.getElementById(`feedback${situation}_${step}`);
-  const continueBtn = document.getElementById(`continue${situation}_${step}`);
-  const data = scoreMap[key]?.[choiceKey] || { feedback: "알 수 없는 선택입니다.", correct: false, point: 0 };
+    const key = `${situation}_${step}`;
+    const feedbackDiv = document.getElementById(`feedback${situation}_${step}`);
+    const continueBtn = document.getElementById(`continue${situation}_${step}`);
+    const data = scoreMap[key]?.[choiceKey] || { feedback: "알 수 없는 선택입니다.", correct: false, point: 0 };
 
-  // 피드백 표시
-  feedbackDiv.className = 'feedback show ' + (data.correct ? 'correct' : 'wrong');
-  feedbackDiv.textContent = data.feedback;
-  continueBtn.style.display = 'block';
+    // 피드백만 표시하고, “다음으로” 버튼만 보이게 한다.
+    feedbackDiv.className = 'feedback show ' + (data.correct ? 'correct' : 'wrong');
+    feedbackDiv.textContent = data.feedback;
+    continueBtn.style.display = 'block';
 
-  // 점수 및 진행도 업데이트
-  currentScore += data.point;
-  progress++;
-  document.getElementById('currentScore').textContent = currentScore;
-  document.getElementById('progressText').textContent = progress;
-  document.getElementById('progressBar').style.width = `${(progress / totalSteps) * 100}%`;
+    // → 점수나 진행도 업데이트는 여기서 하지 않는다.
+    // → 대신 전역 변수에 “선택 정보”만 저장해둔다.
+    selectedSituation = situation;
+    selectedStep = step;
+    selectedChoice = choiceKey;
+}
+function applyScore() {
+    if (selectedSituation === null || selectedStep === null || selectedChoice === null) {
+        // 선택된 것이 없으면(예: 버튼을 누르기 전에 바로 Next를 눌렀거나),
+        // 아무 작업도 하지 않고 종료.
+        return;
+    }
 
-  // 기록 저장
-  scoreHistory.push({ key, choiceKey, feedback: data.feedback, point: data.point });
+    // scoreMap에서 해당 데이터 가져오기
+    const key = `${selectedSituation}_${selectedStep}`;
+    const data = scoreMap[key]?.[selectedChoice];
+    if (!data) return;
+
+    // 점수와 진행도 업데이트
+    currentScore += data.point;
+    progress++;
+    document.getElementById('currentScore').textContent = currentScore;
+    document.getElementById('progressText').textContent = progress;
+    document.getElementById('progressBar').style.width = `${(progress / totalSteps) * 100}%`;
+
+    // 기록 저장
+    scoreHistory.push({ 
+        key, 
+        choiceKey: selectedChoice, 
+        feedback: data.feedback, 
+        point: data.point 
+    });
+
+    // 선택 변수를 리셋해서, 재사용 시 복잡해지지 않게 한다.
+    selectedSituation = null;
+    selectedStep = null;
+    selectedChoice = null;
 }
 
 // --- 화면 전환 함수 ---
@@ -217,8 +249,8 @@ function selectMajor(major) {
       currentScore += val.point;
       progress++;
       document.getElementById('currentScore').textContent = currentScore;
-      document.getElementById('progressText').textContent = progress;
-      document.getElementById('progressBar').style.width = `${(progress / totalSteps) * 100}%`;
+      //document.getElementById('progressText').textContent = progress;
+      //document.getElementById('progressBar').style.width = `${(progress / totalSteps) * 100}%`;
 
       scoreHistory.push({
         key: `major_${major}_step1`,
@@ -274,10 +306,10 @@ function generateFinalReport() {
   // 등급 산정
   const gradeElement = document.getElementById('scoreGrade');
   let grade = '';
-  if (currentScore >= 70) grade = '나는... 🏆 시각장애 도움 전문가';
-  else if (currentScore >= 50) grade = '나는... 🌟 시각장애인을 배려하는 동반자';
-  else if (currentScore >= 30) grade = '나는... 📚 도움 방법을 학습 중인 친구';
-  else grade = '나는... 🌱 도움 방법을 알아가는 새싹';
+  if (currentScore >= 70) grade = '나는... 🏆 시각장애 도움 전문가!';
+  else if (currentScore >= 50) grade = '나는... 🌟 시각장애인을 배려하는 동반자!';
+  else if (currentScore >= 30) grade = '나는... 📚 도움 방법을 학습 중인 친구!';
+  else grade = '나는... 🌱 도움 방법을 알아가는 새싹!';
   gradeElement.textContent = grade;
 
   // 잘한 점 / 개선할 점 분류

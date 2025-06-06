@@ -4,20 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>매십이의 하루 - 시각장애인식 개선 체험</title>
-  <!-- 외부 CSS 불러오기 -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- 상단 프로그래스 바 -->
   <div class="progress-bar" id="progressBar"></div>
 
   <div class="container">
-    <!-- 헤더 -->
     <div class="header">
       <h1>🌟 매십이의 하루</h1>
       <p>올바른 도움 방법을 배워보세요</p>
       <div class="score-display">
         <div>현재 점수: <span id="currentScore">0</span>점</div>
+        <div>진행도: <span id="progressText">0</span>/<span id="totalSteps">8</span></div>
       </div>
     </div>
 
@@ -69,7 +67,11 @@
       </div>
 
       <div class="feedback" id="feedback1_1"></div>
-      <button class="continue-btn" id="continue1_1" onclick="showScreen('situation1_step2')" style="display: none;">다음 단계로 →</button>
+      <button class="continue-btn" id="continue1_1"
+              onclick="applyScore(); showScreen('situation1_step2')"
+              style="display: none;">
+        다음 단계로 →
+      </button>
     </div>
 
     <!-- 상황 1-2: 버스 정류장 도움 방법 -->
@@ -99,7 +101,11 @@
       </div>
 
       <div class="feedback" id="feedback1_2"></div>
-      <button class="continue-btn" id="continue1_2" onclick="showScreen('situation2_step1')" style="display: none;">다음 상황으로 →</button>
+      <button class="continue-btn" id="continue1_2"
+              onclick="applyScore(); showScreen('situation2_step1')"
+              style="display: none;">
+        다음 상황으로 →
+      </button>
     </div>
 
     <!-- 상황 2-1: 캠퍼스 판단 -->
@@ -127,7 +133,11 @@
       </div>
 
       <div class="feedback" id="feedback2_1"></div>
-      <button class="continue-btn" id="continue2_1" onclick="showScreen('situation3_step1')" style="display: none;">다음 상황으로 →</button>
+      <button class="continue-btn" id="continue2_1"
+              onclick="applyScore(); showScreen('situation3_step1')"
+              style="display: none;">
+        다음 상황으로 →
+      </button>
     </div>
 
     <!-- 상황 3-1: 건물 복도 판단 -->
@@ -155,7 +165,11 @@
       </div>
 
       <div class="feedback" id="feedback3_1"></div>
-      <button class="continue-btn" id="continue3_1" onclick="showScreen('situation3_step2')" style="display: none;">다음 단계로 →</button>
+      <button class="continue-btn" id="continue3_1"
+              onclick="applyScore(); showScreen('situation3_step2')"
+              style="display: none;">
+        다음 단계로 →
+      </button>
     </div>
 
     <!-- 상황 3-2: 건물 복도 도움 방법 -->
@@ -185,7 +199,11 @@
       </div>
 
       <div class="feedback" id="feedback3_2"></div>
-      <button class="continue-btn" id="continue3_2" onclick="showScreen('situation4_step1')" style="display: none;">다음 상황으로 →</button>
+      <button class="continue-btn" id="continue3_2"
+              onclick="applyScore(); showScreen('situation4_step1')"
+              style="display: none;">
+        다음 상황으로 →
+      </button>
     </div>
 
     <!-- 상황 4-1: 강의실 계단 판단 -->
@@ -213,7 +231,11 @@
       </div>
 
       <div class="feedback" id="feedback4_1"></div>
-      <button class="continue-btn" id="continue4_1" onclick="showScreen('majorSelect')" style="display: none;">전공별 상황으로 →</button>
+      <button class="continue-btn" id="continue4_1"
+              onclick="applyScore(); showScreen('majorSelect')"
+              style="display: none;">
+        전공별 상황으로 →
+      </button>
     </div>
 
     <!-- 전공 선택 화면 -->
@@ -276,12 +298,16 @@
       <div class="choice-container">
         <div class="choice-title">🤔 너라면 어떻게 할까?</div>
         <div id="major_choices">
-          <!-- JavaScript로 선택지 추가 -->
+          <!-- JavaScript로 선택지 생성 -->
         </div>
       </div>
 
       <div class="feedback" id="feedbackMajor"></div>
-      <button class="continue-btn" id="continueMajor" onclick="showScreen('situation5_step1')" style="display: none;">다음 상황으로 →</button>
+      <button class="continue-btn" id="continueMajor"
+              onclick="applyScore(); showScreen('situation5_step1')"
+              style="display: none;">
+        다음 상황으로 →
+      </button>
     </div>
 
     <!-- 상황 5-1: 강의 진행 중 판단 -->
@@ -309,7 +335,11 @@
       </div>
 
       <div class="feedback" id="feedback5_1"></div>
-      <button class="continue-btn" id="continue5_1" onclick="showScreen('situation6_step1')" style="display: none;">다음 상황으로 →</button>
+      <button class="continue-btn" id="continue5_1"
+              onclick="applyScore(); showScreen('situation6_step1')"
+              style="display: none;">
+        다음 상황으로 →
+      </button>
     </div>
 
     <!-- 상황 6-1: 점심 식당 키오스크 판단 -->
@@ -337,7 +367,11 @@
       </div>
 
       <div class="feedback" id="feedback6_1"></div>
-      <button class="continue-btn" id="continue6_1" onclick="showScreen('situation6_step2')" style="display: none;">다음 상황으로 →</button>
+      <button class="continue-btn" id="continue6_1"
+              onclick="applyScore(); showScreen('situation6_step2')"
+              style="display: none;">
+        다음 상황으로 →
+      </button>
     </div>
 
     <!-- 상황 6-2: 점심 식당 키오스크 방법 -->
@@ -367,7 +401,11 @@
       </div>
 
       <div class="feedback" id="feedback6_2"></div>
-      <button class="continue-btn" id="continue6_2" onclick="showScreen('situation7_step1')" style="display: none;">다음 상황으로 →</button>
+      <button class="continue-btn" id="continue6_2"
+              onclick="applyScore(); showScreen('situation7_step1')"
+              style="display: none;">
+        다음 상황으로 →
+      </button>
     </div>
 
     <!-- 상황 7-1: 팀플 판단 -->
@@ -395,7 +433,11 @@
       </div>
 
       <div class="feedback" id="feedback7_1"></div>
-      <button class="continue-btn" id="continue7_1" onclick="showScreen('situation7_step2')" style="display: none;">다음 단계로 →</button>
+      <button class="continue-btn" id="continue7_1"
+              onclick="applyScore(); showScreen('situation7_step2')"
+              style="display: none;">
+        다음 단계로 →
+      </button>
     </div>
 
     <!-- 상황 7-2: 팀플 도움 방법 -->
@@ -425,7 +467,11 @@
       </div>
 
       <div class="feedback" id="feedback7_2"></div>
-      <button class="continue-btn" id="continue7_2" onclick="showScreen('summaryScreen')" style="display: none;">체험 마무리 →</button>
+      <button class="continue-btn" id="continue7_2"
+              onclick="applyScore(); showScreen('summaryScreen')"
+              style="display: none;">
+        체험 마무리 →
+      </button>
     </div>
 
     <!-- 요약 화면 -->
@@ -462,7 +508,6 @@
     </div>
   </div>
 
-  <!-- 외부 JS 불러오기 -->
   <script src="script.js"></script>
 </body>
 </html>
