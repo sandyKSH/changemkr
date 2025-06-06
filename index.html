@@ -496,7 +496,7 @@ body {
         <p>올바른 도움 방법을 배워보세요</p>
         <div class="score-display">
             <div>현재 점수: <span id="currentScore">0</span>점</div>
-            <div>진행도: <span id="progressText">0</span>/14</div>
+            <div>진행도: <span id="progressText">0</span></div>
         </div>
     </div>
 
@@ -1300,6 +1300,45 @@ function downloadReport() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+function shareToKakao() {
+    const today = new Date().toLocaleDateString('ko-KR');
+    const grade = document.getElementById('scoreGrade').textContent;
+    
+    // 잘한 점과 개선할 점 가져오기
+    const goodPoints = document.querySelectorAll('#goodPoints li');
+    const improvementPoints = document.querySelectorAll('#improvementPoints li');
+    
+    let goodPointsText = '';
+    goodPoints.forEach((item, index) => {
+        goodPointsText += `${index + 1}. ${item.textContent}\n`;
+    });
+    
+    let improvementText = '';
+    improvementPoints.forEach((item, index) => {
+        improvementText += `${index + 1}. ${item.textContent}\n`;
+    });
+    
+    // 공유할 메시지 구성
+    const shareText = `🌟 매십이의 하루 체험 완료!
+
+📊 내 점수: ${currentScore}점
+🎖️ 등급: ${grade}
+
+✅ 잘한 점:
+${goodPointsText}
+📝 개선할 점:
+${improvementText}
+
+시각장애인식 개선 체험을 해보세요!
+👇 체험하러 가기`;
+
+    // 카카오톡 공유 URL 생성
+    const shareUrl = 'https://changemkr.vercel.app';
+    const kakaoShareUrl = `https://sharer.kakao.com/talk/friends/?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+    
+    // 새 창에서 카카오톡 공유 페이지 열기
+    window.open(kakaoShareUrl, '_blank', 'width=500,height=600');
 }
 </script>
 </body>
