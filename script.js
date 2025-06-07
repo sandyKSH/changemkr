@@ -301,8 +301,9 @@ function selectMajor(major) {
 
 // --- 최종 리포트 생성 함수 ---
 function generateFinalReport() {
+    // 최종 점수 표시
     document.getElementById('finalScore').textContent = currentScore;
-    
+
     // 점수 등급 설정
     const gradeElement = document.getElementById('scoreGrade');
     let grade = '';
@@ -311,39 +312,37 @@ function generateFinalReport() {
     else if (currentScore >= 30) grade = '나는... 📚 도움 방법을 학습 중인 친구';
     else grade = '나는... 🌱 도움 방법을 알아가는 새싹';
     gradeElement.textContent = grade;
-    
-    // 실제 scoreHistory에서 맞힌 항목 / 틀린 항목만 추리기
+
+    // scoreHistory에서 맞힌/틀린 항목 추리기
     const goodChoices = scoreHistory.filter(item => item.point > 0);
     const badChoices  = scoreHistory.filter(item => item.point < 0);
-    
-    // 맞힌 항목의 feedback을 최대 3개만 선택
-    const selectedGoodPoints = goodChoices
-      .slice(0, 3)                  // 첫 3개 항목까지만
-      .map(item => item.feedback);  // 그 항목들의 feedback 텍스트만 추출
 
-    // 틀린 항목의 feedback을 최대 3개만 선택
-    const selectedImprovements = badChoices
-      .slice(0, 3)                 // 첫 3개 항목까지만
-      .map(item => item.feedback);  // 그 항목들의 feedback 텍스트만 추출
-    
-    // 잘한 점 표시 (실제 맞힌 항목의 feedback)
+    // feedback 텍스트만 뽑아서 최대 3개, 부족하면 빈 문자열로 채우기
+    let selectedGoodPoints = goodChoices.map(item => item.feedback).slice(0, 3);
+    while (selectedGoodPoints.length < 3) selectedGoodPoints.push('');
+
+    let selectedImprovements = badChoices.map(item => item.feedback).slice(0, 3);
+    while (selectedImprovements.length < 3) selectedImprovements.push('');
+
+    // 잘한 점 리스트 렌더링
     const goodPointsList = document.getElementById('goodPoints');
     goodPointsList.innerHTML = '';
-    selectedGoodPoints.forEach(pointText => {
+    selectedGoodPoints.forEach(text => {
         const li = document.createElement('li');
-        li.textContent = pointText;
+        li.textContent = text;  // 빈 문자열일 경우 빈 <li>가 됩니다
         goodPointsList.appendChild(li);
     });
-    
-    // 개선할 점 표시 (실제 틀린 항목의 feedback)
+
+    // 개선할 점 리스트 렌더링
     const improvementPointsList = document.getElementById('improvementPoints');
     improvementPointsList.innerHTML = '';
-    selectedImprovements.forEach(pointText => {
+    selectedImprovements.forEach(text => {
         const li = document.createElement('li');
-        li.textContent = pointText;
+        li.textContent = text;  // 빈 문자열은 빈 항목으로
         improvementPointsList.appendChild(li);
     });
 }
+
 
 // --- 리포트 다운로드 함수 (이미지 저장) ---
 function downloadReport() {
