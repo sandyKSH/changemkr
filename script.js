@@ -69,8 +69,8 @@ const majorMap = {
       'wait_request':  { text: "아니, 먼저 도와달라고 하기 전에는 안 도와주는게 예의야.", correct: false, point: -5 }
     },
     step2: {
-      'offer_help':     { text: "도움이 필요한다면 내가 도와줄테니 말해줘라고 말한다. (적극적)", correct: true,  point: 10 },
-      'check_progress': { text: "중간 중간 잘 진행되고 어려운 부분은 없는지 살며시 물어본다. (소극적)", correct: true,  point: 8 },
+      'offer_help':     { text: "도움이 필요한다면 내가 도와줄테니 말해줘라고 말한다.", correct: true,  point: 8 },
+      'check_progress': { text: "중간 중간 잘 진행되고 어려운 부분은 없는지 살며시 물어본다. ", correct: true,  point: 5 },
       'do_for_them':    { text: "실험을 단계별로 하나씩 대신해주면서 알아듣기 쉽게 설명해준다.", correct: false, point: -8 },
       'watch_correct':  { text: "옆에서 실험하는 걸 지켜보면서 잘 못 될때마다 잡아준다.", correct: false, point: -5 }
     }
@@ -83,8 +83,8 @@ const majorMap = {
       'too_much':    { text: "아니, 너무 과도한 배려는 오히려 불편하게 만들 수도 있어.", correct: false, point: -3 }
     },
     step2: {
-      'explain_parts':     { text: "부품 하나하나의 명칭과 최종 조립물의 형태를 말로 설명해준다. (적극적)", correct: true,  point: 10 },
-      'offer_when_stuck':  { text: "조립하다 막히는 부분이 있으면 나에게 물어보라고 한다. (소극적)", correct: true,  point: 8 },
+      'explain_parts':     { text: "부품 하나하나의 명칭과 최종 조립물의 형태를 말로 설명해준다. ", correct: true,  point: 10 },
+      'offer_when_stuck':  { text: "조립하다 막히는 부분이 있으면 나에게 물어보라고 한다. ", correct: true,  point: 8 },
       'tell_everything':   { text: "부품 별로 어떨때 쓰이는지와 어떻게 조립해야하는지 순서를 다 알려준다.", correct: false, point: -5 },
       'do_difficult':      { text: "어려워보이는 부분의 조립은 먼저 나서서 조립해준다.", correct: false, point: -8 }
     }
@@ -97,8 +97,8 @@ const majorMap = {
       'too_much_interference':{ text: "아니, 당사자의 동의를 떠나 너무 과한 참견일 수도 있어 자칫 부담스럽게 느낄 수도 있어.", correct: false, point: -5 }
     },
     step2: {
-      'visit_prof_together': { text: "당사자 의사를 확인후 교수님께 함께 찾아가 적합한 시험 방식에 대해 여쭤본다. (적극적)", correct: true,  point: 10 },
-      'suggest_talk':       { text: "당사자에게 먼저 물어본 후 교수님께 말씀드려볼 수 있도록 권유한다. (소극적)", correct: true,  point: 8 },
+      'visit_prof_together': { text: "당사자 의사를 확인후 교수님께 함께 찾아가 적합한 시험 방식에 대해 여쭤본다. ", correct: true,  point: 10 },
+      'suggest_talk':       { text: "당사자에게 먼저 물어본 후 교수님께 말씀드려볼 수 있도록 권유한다.)", correct: true,  point: 8 },
       'email_quietly':      { text: "당사자를 생각해서 교수님께 조용히 건의 메일을 드린다.", correct: false, point: -8 },
       'suggest_school':     { text: "당사자의 편의성을 생각해 적합한 방식으로 시험이 치뤄질 수 있도록 학교 측에 건의한다.", correct: false, point: -5 }
     }
@@ -111,8 +111,8 @@ const majorMap = {
       'let_them_bond':    { text: "아니, 안내견을 만지며 빨리 친해질 수 있을거고 매십이는 많은 관심이 부끄러운 걸꺼야.", correct: false, point: -8 }
     },
     step2: {
-      'tell_etiquette': { text: "그 자리에서 허락없이 안내견을 만지고 부르는 행위는 에티켓에 어긋난다고 조원들에게 말해준다. (적극적)", correct: true,  point: 10 },
-      'gesture_stop':   { text: "하지말라는 제스쳐와 함께 안내견을 허락 없이 함부로 대하는 것은 실례라고 말한다. (소극적)", correct: true,  point: 8 },
+      'tell_etiquette': { text: "그 자리에서 허락없이 안내견을 만지고 부르는 행위는 에티켓에 어긋난다고 조원들에게 말해준다.", correct: true,  point: 10 },
+      'gesture_stop':   { text: "하지말라는 제스쳐와 함께 안내견을 허락 없이 함부로 대하는 것은 실례라고 말한다.", correct: true,  point: 8 },
       'change_subject': { text: "지금은 수업 중이니 수업에 집중하자고 말해서 불편한 상황을 유하게 넘긴다.", correct: false, point: -5 },
       'partial_correct':{ text: "지금은 앉아 있으니 괜찮지만 시각장애인이 이동중일 때 안내견을 부르거나 만지는 행동은 잘 못 된거라고 말한다.", correct: false, point: -3 }
     }
@@ -125,8 +125,8 @@ const majorMap = {
       'burden_concern':  { text: "아니, 오히려 역차별이나 과도한 배려처럼 부담감을 느낄 수 있을 것 같아.", correct: false, point: -5 }
     },
     step2: {
-      'continuous_feedback': { text: "활동을 하나씩 잘 따라올 수 있도록 옆에서 계속 지켜보며 피드백을 해준다. (적극적)", correct: true,  point: 10 },
-      'ask_specific':        { text: "어떤 부분이 어려운지 구체적으로 물어본 후 도와준다. (소극적)", correct: true,  point: 8 },
+      'continuous_feedback': { text: "활동을 하나씩 잘 따라올 수 있도록 옆에서 계속 지켜보며 피드백을 해준다.", correct: true,  point: 10 },
+      'ask_specific':        { text: "어떤 부분이 어려운지 구체적으로 물어본 후 도와준다.)", correct: true,  point: 5 },
       'do_instead':          { text: "앞이 안보여 활동을 수행하기 힘드니 내가 직접 대신 해준다.", correct: false, point: -8 },
       'ask_prof_easier':     { text: "교수님께 말씀드려 매십이가 좀 더 쉽게 수행할 수 있도록 활동 난이도를 조절해달라고 정중히 요청 드린다.", correct: false, point: -5 }
     }
@@ -139,8 +139,8 @@ const majorMap = {
       'materials_enough': { text: "아니, 수업자료도 잘 나와 있으니 굳이 그럴 필요는 없을 것 같아.", correct: false, point: -5 }
     },
     step2: {
-      'read_data':      { text: "그림 속 통계자료의 수치가 몇인지 하나씩 따라 읽어준후 원인을 생각해볼 수 있도록 한다. (적극적)", correct: true,  point: 10 },
-      'ask_difficulty': { text: "혹시 어려운 부분이 있는지 물어본 후 도와준다. (소극적)", correct: true,  point: 8 },
+      'read_data':      { text: "그림 속 통계자료의 수치가 몇인지 하나씩 따라 읽어준후 원인을 생각해볼 수 있도록 한다. ", correct: true,  point: 8 },
+      'ask_difficulty': { text: "혹시 어려운 부분이 있는지 물어본 후 도와준다.", correct: true,  point: 5 },
       'explain_meaning':{ text: "각각의 통계자료가 어떤 의미를 가지는지 하나씩 알려준다.", correct: false, point: -5 },
       'give_answer':    { text: "통계자료가 무엇이 원인인지 설명해주고 그 이유를 말해보라고 한다.", correct: false, point: -8 }
     }
