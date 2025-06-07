@@ -244,7 +244,7 @@ function selectMajor(major) {
       feedback.className = 'feedback show ' + (val.correct ? 'correct' : 'wrong');
       feedback.textContent = val.correct
         ? "맞아, 이런 상황에서는 도움이 필요해. 어떤 방식으로 도와주는게 좋을까?"
-        : "이 상황에서는 도움이 필요한 편이야. 다시 생각해보자.";
+        : "이 상황에서는 도움이 필요한 편이다. 다시 생각해보아요.";
 
       currentScore += val.point;
       progress++;
@@ -271,7 +271,7 @@ function selectMajor(major) {
             feedback2.className = 'feedback show ' + (val2.correct ? 'correct' : 'wrong');
             feedback2.textContent = val2.correct
               ? "정답이에요! 이런 방식으로 도와주는 것이 가장 효과적이에요."
-              : "좀 더 나은 방법을 생각해봐요. 상대방의 입장을 더 고려해보세요.";
+              : "상대방의 입장을 더 고려해보세요.";
 
             currentScore += val2.point;
             progress++;
@@ -291,7 +291,7 @@ function selectMajor(major) {
           container.appendChild(btn2);
         });
         document.querySelector('#major_situation .choice-title').textContent = '🤔 어떤 식으로 도와주는게 좋을까?';
-      }, 500);
+      }, 1000);
     };
     container.appendChild(btn);
   });
@@ -301,96 +301,123 @@ function selectMajor(major) {
 
 // --- 최종 리포트 생성 함수 ---
 function generateFinalReport() {
-  document.getElementById('finalScore').textContent = currentScore;
+    document.getElementById('finalScore').textContent = currentScore;
+    
+    // 점수 등급 설정
+    const gradeElement = document.getElementById('scoreGrade');
+    let grade = '';
+    if (currentScore >= 70) grade = '나는... 🏆 시각장애 도움 전문가';
+    else if (currentScore >= 50) grade = '나는... 🌟 시각장애인을 배려하는 동반자';
+    else if (currentScore >= 30) grade = '나는... 📚 도움 방법을 학습 중인 친구';
+    else grade = '나는... 🌱 도움 방법을 알아가는 새싹';
+    gradeElement.textContent = grade;
+    
+    // 실제 scoreHistory에서 맞힌 항목 / 틀린 항목만 추리기
+    const goodChoices = scoreHistory.filter(item => item.point > 0);
+    const badChoices  = scoreHistory.filter(item => item.point < 0);
+    
+    // 맞힌 항목의 feedback을 최대 3개만 선택
+    const selectedGoodPoints = goodChoices
+      .slice(0, 3)                  // 첫 3개 항목까지만
+      .map(item => item.feedback);  // 그 항목들의 feedback 텍스트만 추출
 
-  // 등급 산정
-  const gradeElement = document.getElementById('scoreGrade');
-  let grade = '';
-  if (currentScore >= 70) grade = '나는... 🏆 시각장애 도움 전문가!';
-  else if (currentScore >= 50) grade = '나는... 🌟 시각장애인을 배려하는 동반자!';
-  else if (currentScore >= 30) grade = '나는... 📚 도움 방법을 학습 중인 친구!';
-  else grade = '나는... 🌱 도움 방법을 알아가는 새싹!';
-  gradeElement.textContent = grade;
-
-  // 잘한 점 / 개선할 점 분류
-  const goodChoices = scoreHistory.filter(item => item.point > 0);
-  const badChoices  = scoreHistory.filter(item => item.point < 0);
-
-  const goodPoints = [
-    "버스 정류장에서 도움이 필요한 상황을 잘 판단했어요",
-    "시각장애인의 의사를 먼저 물어보았어요",
-    "안내견과 함께 있을 때는 방해하지 않는 것이 좋다는 것을 이해했어요",
-    "점자블록이 없는 환경에서 길 안내의 필요성을 잘 파악했어요",
-    "키오스크 같은 디지털 접근성 문제를 인지했어요",
-    "팀플에서 적절히 배려하는 태도를 보였어요"
-  ];
-
-  const improvementPoints = [
-    "안내견이 있을 때는 대부분 도움이 불필요하다는 것을 기억해요",
-    "동의 없이 신체 접촉을 하는 것은 피해주세요",
-    "안내견을 함부로 만지거나 부르지 않도록 주의하세요",
-    "너무 복잡한 설명은 오히려 혼란을 줄 수 있어요",
-    "도움을 대신 해주기보다 함께 할 수 있는 방법을 찾아보세요",
-    "수업 중일 때는 조용히 지켜보는 것이 좋아요"
-  ];
-
-  // 잘한 점 최대 3개
-  const goodList = document.getElementById('goodPoints');
-  goodList.innerHTML = '';
-  const selectedGood = goodChoices.slice(0, Math.min(3, goodChoices.length));
-  selectedGood.forEach((_, i) => {
-    const li = document.createElement('li');
-    li.textContent = goodPoints[i];
-    goodList.appendChild(li);
-  });
-
-  // 개선할 점 최대 3개
-  const impList = document.getElementById('improvementPoints');
-  impList.innerHTML = '';
-  const selectedBad = badChoices.slice(0, Math.min(3, badChoices.length || 1));
-  selectedBad.forEach((_, i) => {
-    const li = document.createElement('li');
-    li.textContent = improvementPoints[i];
-    impList.appendChild(li);
-  });
+    // 틀린 항목의 feedback을 최대 3개만 선택
+    const selectedImprovements = badChoices
+      .slice(0, 3)                 // 첫 3개 항목까지만
+      .map(item => item.feedback);  // 그 항목들의 feedback 텍스트만 추출
+    
+    // 잘한 점 표시 (실제 맞힌 항목의 feedback)
+    const goodPointsList = document.getElementById('goodPoints');
+    goodPointsList.innerHTML = '';
+    selectedGoodPoints.forEach(pointText => {
+        const li = document.createElement('li');
+        li.textContent = pointText;
+        goodPointsList.appendChild(li);
+    });
+    
+    // 개선할 점 표시 (실제 틀린 항목의 feedback)
+    const improvementPointsList = document.getElementById('improvementPoints');
+    improvementPointsList.innerHTML = '';
+    selectedImprovements.forEach(pointText => {
+        const li = document.createElement('li');
+        li.textContent = pointText;
+        improvementPointsList.appendChild(li);
+    });
 }
 
-// --- 리포트 다운로드 함수 ---
+// --- 리포트 다운로드 함수 (이미지 저장) ---
 function downloadReport() {
+  console.log('▶ downloadReport 호출됨');  // 함수가 호출되는지 확인용
   const today = new Date().toLocaleDateString('ko-KR').replace(/\./g, '-');
-  const grade = document.getElementById('scoreGrade').textContent;
+  const captureEl = document.getElementById('reportCapture');
 
-  let report = `=== 매십이의 하루 체험 리포트 ===\n`;
-  report += `날짜: ${today}\n`;
-  report += `최종 점수: ${currentScore}점\n`;
-  report += `등급: ${grade}\n\n`;
+  if (typeof html2canvas !== 'function') {
+    return alert('html2canvas가 로드되지 않아 이미지 변환을 할 수 없습니다.');
+  }
 
-  report += `=== 잘한 점 ===\n`;
-  document.querySelectorAll('#goodPoints li').forEach((li, idx) => {
-    report += `${idx + 1}. ${li.textContent}\n`;
-  });
+  html2canvas(captureEl, { scale: 2 })
+    .then(canvas => {
+      // 브라우저 호환성 고려한 다운로드
+      if (canvas.toBlob) {
+        canvas.toBlob(blob => {
+          const link = document.createElement('a');
+          link.download = `매십이의하루_체험리포트_${today}.png`;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+          URL.revokeObjectURL(link.href);
+        });
+      } else {
+        // toBlob 미지원 시 fallback
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `매십이의하루_체험리포트_${today}.png`;
+        link.href = dataURL;
+        link.click();
+      }
+    })
+    .catch(err => {
+      console.error('이미지 변환 실패:', err);
+      alert('이미지 저장에 실패했습니다.');
+    });
+}
 
-  report += `\n=== 개선할 점 ===\n`;
-  document.querySelectorAll('#improvementPoints li').forEach((li, idx) => {
-    report += `${idx + 1}. ${li.textContent}\n`;
-  });
+// --- 트위터 공유 (Intent URL) ---
+function shareToTwitter() {
+  const gradeText = document.getElementById('scoreGrade').textContent;
+  const message = encodeURIComponent(
+    `🌟 매십이의 하루 체험 완료!\n\n` +
+    `나는 '${gradeText}'였어요.\n` +
+    `어려운 상황을 보면 바로 나서서 도움을 주려고 하는 따뜻한 마음을 가지고 있어요. ` +
+    `때로는 먼저 물어보는 것도 좋답니다!\n\n` +
+    `너도 체험해봐! 👇\nhttps://changemkr.vercel.app/`
+  );
+  const url = encodeURIComponent('https://changemkr.vercel.app/');
+  window.open(
+    `https://twitter.com/intent/tweet?text=${message}&url=${url}`,
+    '_blank'
+  );
+}
 
-  report += `\n=== 학습 내용 ===\n`;
-  report += `• 도움이 필요한 상황과 불필요한 상황 구분하기\n`;
-  report += `• 시각장애인의 주체성을 존중하는 도움 방법 배우기\n`;
-  report += `• 구체적이고 효과적인 안내 방법 익히기\n`;
-  report += `• 안내견과 함께 있을 때의 올바른 에티켓 익히기\n\n`;
-  report += `감사합니다! 🌟`;
+// --- 범용 공유 (Web Share API / 클립보드 fallback) ---
+function shareToKakao() {
+  const gradeText = document.getElementById('scoreGrade').textContent;
+  const shareText =
+    `🌟 매십이의 하루 체험 완료!\n\n` +
+    `나는 '${gradeText}'였어요.\n` +
+    `어려운 상황을 보면 바로 나서서 도움을 주려고 하는 따뜻한 마음을 가지고 있어요. ` +
+    `때로는 먼저 물어보는 것도 좋답니다!\n\n` +
+    `너도 체험해봐!\nhttps://changemkr.vercel.app/`;
 
-  const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `매십이의하루_체험리포트_${today}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  if (navigator.share) {
+    navigator.share({
+      title: '매십이의 하루 체험 완료',
+      text: shareText,
+      url: 'https://changemkr.vercel.app/'
+    }).catch(console.error);
+  } else {
+    navigator.clipboard.writeText(shareText)
+      .then(() => alert('공유 메시지가 클립보드에 복사되었습니다!'));
+  }
 }
 
 // --- DOMContentLoaded 이벤트로 초기화 ---
@@ -400,3 +427,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('progressText').textContent = progress;
   document.getElementById('progressBar').style.width = `0%`;
 });
+
+document.getElementById('twitterShareBtn')
+  .addEventListener('click', shareToTwitter);
+document.getElementById('nativeShareBtn')
+  .addEventListener('click', shareToKakao);

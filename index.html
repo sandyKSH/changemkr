@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>매십이의 하루 - 시각장애인식 개선 체험</title>
   <link rel="stylesheet" href="styles.css" />
+  <!-- html2canvas: DOM을 캡처해 이미지로 변환 -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <div class="progress-bar" id="progressBar"></div>
@@ -90,7 +92,7 @@
           💬 몇 번 버스를 기다리는 중인지 물어보며 버스가 오면 알려준다. (적극적)
         </button>
         <button class="choice-btn" onclick="makeChoice(1, 2, 'polite_approach')">
-          🤝 조심스래 다가가 도움이 필요한지 먼저 물어본다. (소극적)
+          🤝 조심스레 다가가 도움이 필요한지 먼저 물어본다. (소극적)
         </button>
         <button class="choice-btn" onclick="makeChoice(1, 2, 'wrong_touch')">
           👋 어깨를 가볍게 2번 두드리며 도움이 필요한지 물어본다.
@@ -481,7 +483,7 @@
         오늘 하루 동안 매십이와 함께해줘서 고마워!<br><br>
         너의 선택을 기반으로 결과를 정리해볼게.
       </div>
-
+      <div id="reportCapture">
       <div class="final-score-card">
         <div class="final-score-title">최종 점수</div>
         <div class="final-score-number">
@@ -500,14 +502,15 @@
           <ul id="improvementPoints" class="feedback-list"><!-- JS로 삽입 --></ul>
         </div>
       </div>
-
+      </div>
       <div class="action-buttons">
         <button class="btn-secondary" onclick="downloadReport()">📄 리포트 저장하기</button>
-        <button class="btn-primary" onclick="location.reload()">🔁 다시 체험하기</button>
+        <button id="twitterShareBtn" class="btn-primary">🐦 트위터 공유</button>
+        <button id="nativeShareBtn" class="btn-primary">💬 공유하기</button>
+      <button class="btn-primary" onclick="location.reload()">🔁 다시 체험하기</button>
       </div>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
