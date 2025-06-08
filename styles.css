@@ -270,7 +270,17 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
 }
-
+.login-btn {
+  position: absolute;
+  top: 8px;       /* 필요에 따라 조정 */
+  right: 14px;     /* 필요에 따라 조정 */
+  text-decoration: underline;
+  color: rgb(240, 240, 240);  /* 부모 색상 따르기 */
+  font-size: 12px; /* 필요에 따라 조정 */
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 .continue-btn {
   background: linear-gradient(45deg, #51cf66, #69db7c);
   color: white;
