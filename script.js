@@ -171,7 +171,15 @@ function makeChoice(situation, step, choiceKey) {
     selectedSituation = situation;
     selectedStep = step;
     selectedChoice = choiceKey;
-}
+
+    setTimeout(() => {
+      const target = feedbackDiv || continueBtn;
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+    }
+
 function applyScore() {
     if (selectedSituation === null || selectedStep === null || selectedChoice === null) {
         // 선택된 것이 없으면(예: 버튼을 누르기 전에 바로 Next를 눌렀거나),
